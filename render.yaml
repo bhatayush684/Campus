@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: campusmind
+    runtime: docker
+    plan: free
+    dockerfilePath: ./server/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GOOGLE_AI_API_KEY
+        sync: false
+      - key: GOOGLE_AI_MODEL
+        value: gemini-3-flash-preview,gemini-3.1-flash-lite
+      - key: CORS_ORIGIN
+        value: https://campusmind.onrender.com

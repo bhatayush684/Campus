@@ -66,3 +66,22 @@ npm run smoke
 For a non-Docker host, run `npm run build` in the root package and
 `npm run build && npm start` in `server`; place the generated `dist` behind
 an HTTPS reverse proxy that forwards `/api` and `/health` to port 3001.
+
+## Deploy to Render
+
+This repository includes `render.yaml` for a single Docker web service. In
+Render, choose **New > Blueprint**, connect this repository, and apply the
+Blueprint. In the service Environment settings, add `GOOGLE_AI_API_KEY` as a
+secret, then deploy. Render uses `/health` for readiness and serves the React
+SPA and `/api` routes from the same service.
+
+After deployment, verify:
+
+```powershell
+$env:SMOKE_BASE_URL = "https://your-service.onrender.com"
+npm run smoke
+```
+
+Replace `CORS_ORIGIN` in `render.yaml` with the actual Render URL if the
+service name is changed. If you add a custom domain, set it to that HTTPS
+origin and redeploy.

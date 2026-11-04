@@ -1,4 +1,11 @@
-FROM node:22-alpine AS build
+FROM node:22-alpine AS frontend-build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:22-alpine AS server-build
 WORKDIR /app/server
 COPY server/package*.json ./
 RUN npm ci
@@ -8,9 +15,10 @@ RUN npm run build
 FROM node:22-alpine
 ENV NODE_ENV=production
 WORKDIR /app/server
-COPY --from=build /app/server/package*.json ./
+COPY --from=server-build /app/server/package*.json ./
 RUN npm ci --omit=dev
-COPY --from=build /app/server/dist ./dist
-COPY public /app/public
+COPY --from=server-build /app/server/dist ./dist
+COPY --from=frontend-build /app/dist /app/dist
+COPY --from=frontend-build /app/public /app/public
 EXPOSE 3001
 CMD ["npm", "start"]
