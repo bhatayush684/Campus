@@ -85,3 +85,11 @@ npm run smoke
 Replace `CORS_ORIGIN` in `render.yaml` with the actual Render URL if the
 service name is changed. If you add a custom domain, set it to that HTTPS
 origin and redeploy.
+
+## Deploy the frontend to Vercel
+
+If the frontend is deployed separately to Vercel, set the Vercel project root
+to the repository root and use the Vite framework preset. The included
+`vercel.json` sends client-side routes such as `/app/chat` back to
+`index.html`. The API still needs to be served by Render; for the simplest
+setup, use the Render single-service deployment so `/api` remains same-origin.
