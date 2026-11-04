@@ -2,10 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, BookOpen, Clock, CheckCircle, Circle, Sparkles, Target, TrendingUp, Gauge, RotateCcw, ListChecks, ExternalLink, BrainCircuit } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { apiGenerateStudyPlan } from '../services/api';
+import { apiGeneratePracticeSet, apiGenerateStudyPlan } from '../services/api';
 import { useAuthStore } from '../store/authStore';
 import { KnowledgeLevel, PracticeSet, StudyModule, StudyPlan as StudyPlanData } from '../types';
-import { apiGeneratePracticeSet } from '../services/api';
 import { toast } from 'sonner';
 
 const DEPARTMENTS = ['CSE', 'IT', 'ENTC', 'Civil', 'Mechanical', 'Electrical', 'AI/ML', 'Robotics', 'General'];
@@ -29,7 +28,7 @@ function SubjectCard({ subject, onToggle, onModuleChange, index }: {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.05, 0.5) }}
       className={cn(
-        'card p-4 border-l-4 transition-all hover:shadow-md',
+        'card border-l-4 p-5 transition-all hover:-translate-y-0.5 hover:shadow-lg',
         subject.completed ? 'border-l-green-500 opacity-60' : 'border-l-primary-500'
       )}
     >
@@ -104,7 +103,7 @@ function ModuleCard({ module, onChange }: { module: StudyModule; onChange: (modu
     test: 'Take a timed test',
   };
   return (
-    <div className="rounded-lg bg-slate-50 dark:bg-slate-800/60 p-3">
+    <div className="rounded-xl border border-slate-200/80 bg-slate-50/80 p-3.5 dark:border-slate-700/80 dark:bg-slate-800/50">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-medium text-slate-800 dark:text-slate-200">{module.title}</p>
@@ -112,7 +111,7 @@ function ModuleCard({ module, onChange }: { module: StudyModule; onChange: (modu
         </div>
         <span className="text-[10px] text-primary-500 whitespace-nowrap">{actions[module.nextAction]}</span>
       </div>
-      <div className="mt-2 flex items-center gap-1">
+      <div className="mt-3 flex flex-wrap items-center gap-1">
         <span className="text-[10px] text-slate-400 mr-1">I know this:</span>
         {[1, 2, 3, 4, 5].map(level => (
           <button
@@ -407,55 +406,6 @@ export default function StudyPlan() {
                 <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2"><BrainCircuit className="w-4 h-4 text-purple-500" /> PYQ priority set</h3>
                 <span className="badge text-[10px] bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300">{studyPlan.metadata?.pyqs?.length || 0} questions</span>
               </div>
-              <div className="card p-5 mb-6">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <div>
-                    <h3 className="font-semibold text-slate-900 dark:text-white">Knowledge check</h3>
-                    <p className="text-xs text-slate-400 mt-1">Generate 10–100 questions from PYQ references and syllabus modules.</p>
-                  </div>
-                  <span className="badge text-[10px] bg-primary-100 text-primary-700 dark:bg-primary-950/40 dark:text-primary-300">PYQ + syllabus</span>
-                </div>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <select aria-label="Practice scope" value={practiceScope} onChange={event => setPracticeScope(event.target.value as 'module' | 'course')} className="input">
-                    <option value="course">Complete course</option>
-                    <option value="module">One module</option>
-                  </select>
-                  <select aria-label="Practice subject" value={practiceSubject || practiceSubjectData?.name || ''} onChange={event => setPracticeSubject(event.target.value)} className="input">
-                    {studyPlan.subjects.map(subject => <option key={subject.name}>{subject.name}</option>)}
-                  </select>
-                  {practiceScope === 'module' ? (
-                    <select aria-label="Practice module" value={practiceModule || practiceModules[0]?.title || ''} onChange={event => setPracticeModule(event.target.value)} className="input">
-                      {practiceModules.map(module => <option key={module.id}>{module.title}</option>)}
-                    </select>
-                  ) : <div className="input text-slate-500">All tracked modules</div>}
-                  <div className="flex gap-2">
-                    <input aria-label="Question count" type="number" min={10} max={100} step={5} value={practiceCount} onChange={event => setPracticeCount(Math.max(10, Math.min(100, Number(event.target.value) || 10)))} className="input w-24" />
-                    <button type="button" onClick={generatePracticeSet} className="btn-primary flex-1 justify-center">Generate</button>
-                  </div>
-                </div>
-                {practiceSet && (
-                  <div className="mt-4 border-t border-slate-100 dark:border-slate-800 pt-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{practiceSet.title} · {practiceSet.questions.length} questions</p>
-                      <button type="button" onClick={() => setPracticeSet(null)} className="text-xs text-slate-400 hover:text-primary-500">Clear</button>
-                    </div>
-                    <div className="max-h-[34rem] overflow-auto space-y-2 pr-1">
-                      {practiceSet.questions.map((question, index) => (
-                        <details key={question.id} className="rounded-lg bg-slate-50 dark:bg-slate-800/60 p-3">
-                          <summary className="cursor-pointer text-xs text-slate-700 dark:text-slate-300">
-                            <span className="font-semibold mr-2">{index + 1}.</span>{question.question}
-                          </summary>
-                          <div className="mt-2 text-[10px] text-slate-400 flex flex-wrap gap-2">
-                            <span>{question.marks} marks</span><span>{question.type}</span><span>{question.module || 'Mixed'}</span>
-                            <span>{question.source === 'pyq-reference' ? `PYQ reference${question.year ? ` · ${question.year}` : ''}` : 'Syllabus practice'}</span>
-                          </div>
-                          <p className="mt-2 text-xs text-primary-600 dark:text-primary-300"><b>Answer checklist:</b> {question.answerHint}</p>
-                        </details>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
               <div className="space-y-2">
                 {(studyPlan.metadata?.pyqs || []).slice(0, 4).map(pyq => (
                   <div key={pyq.id} className="rounded-lg bg-slate-50 dark:bg-slate-800/60 p-3">
@@ -479,6 +429,72 @@ export default function StudyPlan() {
               </div>
             </div>
           </div>
+          <section className="card mb-6 overflow-hidden">
+            <div className="border-b border-slate-200 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-primary-500">Practice workspace</p>
+                  <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-white">Test your understanding</h3>
+                  <p className="mt-1 max-w-2xl text-xs text-slate-500 dark:text-slate-400">Build a focused 10–100 question set from PYQ references and your tracked syllabus modules.</p>
+                </div>
+                <span className="badge w-fit bg-primary-100 text-primary-700 dark:bg-primary-950/40 dark:text-primary-300">PYQ + syllabus</span>
+              </div>
+            </div>
+            <div className="p-5">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <label className="space-y-1">
+                  <span className="text-[11px] font-medium text-slate-500">Scope</span>
+                  <select aria-label="Practice scope" value={practiceScope} onChange={event => setPracticeScope(event.target.value as 'module' | 'course')} className="input w-full">
+                    <option value="course">Complete course</option>
+                    <option value="module">One module</option>
+                  </select>
+                </label>
+                <label className="space-y-1">
+                  <span className="text-[11px] font-medium text-slate-500">Subject</span>
+                  <select aria-label="Practice subject" value={practiceSubject || practiceSubjectData?.name || ''} onChange={event => setPracticeSubject(event.target.value)} className="input w-full">
+                    {studyPlan.subjects.map(subject => <option key={subject.name}>{subject.name}</option>)}
+                  </select>
+                </label>
+                <label className="space-y-1">
+                  <span className="text-[11px] font-medium text-slate-500">Module</span>
+                  {practiceScope === 'module' ? (
+                    <select aria-label="Practice module" value={practiceModule || practiceModules[0]?.title || ''} onChange={event => setPracticeModule(event.target.value)} className="input w-full">
+                      {practiceModules.map(module => <option key={module.id}>{module.title}</option>)}
+                    </select>
+                  ) : <div className="input flex items-center text-slate-500">All tracked modules</div>}
+                </label>
+                <label className="space-y-1">
+                  <span className="text-[11px] font-medium text-slate-500">Questions</span>
+                  <div className="flex gap-2">
+                    <input aria-label="Question count" type="number" min={10} max={100} step={5} value={practiceCount} onChange={event => setPracticeCount(Math.max(10, Math.min(100, Number(event.target.value) || 10)))} className="input min-w-0 flex-1" />
+                    <button type="button" onClick={generatePracticeSet} className="btn-primary shrink-0 justify-center px-4">Generate</button>
+                  </div>
+                </label>
+              </div>
+              {practiceSet && (
+                <div className="mt-5 border-t border-slate-200 pt-5 dark:border-slate-800">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{practiceSet.title} <span className="font-normal text-slate-400">· {practiceSet.questions.length} questions</span></p>
+                    <button type="button" onClick={() => setPracticeSet(null)} className="text-xs text-slate-400 hover:text-primary-500">Clear set</button>
+                  </div>
+                  <div className="max-h-[34rem] space-y-2 overflow-auto pr-1">
+                    {practiceSet.questions.map((question, index) => (
+                      <details key={question.id} className="group rounded-xl border border-slate-200 bg-white p-3 transition-colors hover:border-primary-300 dark:border-slate-700 dark:bg-slate-900/40">
+                        <summary className="cursor-pointer list-none text-xs leading-5 text-slate-700 marker:hidden dark:text-slate-300">
+                          <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary-100 text-[10px] font-bold text-primary-700 dark:bg-primary-950/60 dark:text-primary-300">{index + 1}</span>
+                          {question.question}
+                        </summary>
+                        <div className="mt-3 border-t border-slate-100 pt-2 text-[10px] text-slate-400 dark:border-slate-800">
+                          <div className="flex flex-wrap gap-x-3 gap-y-1"><span>{question.marks} marks</span><span>{question.type}</span><span>{question.module || 'Mixed'}</span><span>{question.source === 'pyq-reference' ? `PYQ reference${question.year ? ` · ${question.year}` : ''}` : 'Syllabus practice'}</span></div>
+                          <p className="mt-2 text-xs text-primary-600 dark:text-primary-300"><b>Answer checklist:</b> {question.answerHint}</p>
+                        </div>
+                      </details>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -559,7 +575,7 @@ export default function StudyPlan() {
           </div>
 
           {/* Subjects */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                 Study Subjects
@@ -574,7 +590,8 @@ export default function StudyPlan() {
                 <RotateCcw className="w-3.5 h-3.5" /> Generate New Plan
               </button>
             </div>
-            {studyPlan.subjects.map((subject: any, index: number) => (
+            <div className="grid gap-4 xl:grid-cols-2">
+            {studyPlan.subjects.map((subject, index) => (
               <SubjectCard
                 key={index}
                 subject={subject}
@@ -583,6 +600,7 @@ export default function StudyPlan() {
                 index={index}
               />
             ))}
+            </div>
           </div>
         </motion.div>
       )}
