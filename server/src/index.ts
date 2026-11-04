@@ -13,16 +13,19 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const serverDirectory = path.dirname(fileURLToPath(import.meta.url));
 const frontendDirectory = path.resolve(serverDirectory, '../../dist');
+const configuredOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map(value => value.trim())
+  .filter(Boolean);
+const localOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173'];
 
 // Middleware
 app.use(cors({
   origin: (origin, callback) => {
-    const configuredOrigins = (process.env.CORS_ORIGIN || '')
-      .split(',')
-      .map(value => value.trim())
-      .filter(Boolean);
-    const localOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173'];
-    if (!origin || configuredOrigins.length === 0 || configuredOrigins.includes(origin) || localOrigins.includes(origin)) {
+    const allowedOrigins = process.env.NODE_ENV === 'production'
+      ? configuredOrigins
+      : [...configuredOrigins, ...localOrigins];
+    if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
     return callback(new Error('Origin is not allowed by CORS'));
@@ -62,8 +65,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Error:', err);
   res.status(500).json({ 
-    error: 'Internal server error',
-    message: err instanceof Error ? err.message : 'Unexpected server error'
+    error: 'Internal server error'
   });
 });
 

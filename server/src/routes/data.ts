@@ -48,10 +48,9 @@ router.get('/notices', async (req, res) => {
   try {
     const processed = await getProcessedData();
     res.json({ success: true, data: processed.notices });
-  } catch (error: any) {
+  } catch (error) {
     res.status(500).json({ 
-      error: 'Failed to fetch notices',
-      message: error.message 
+      error: 'Failed to fetch notices'
     });
   }
 });
@@ -64,10 +63,9 @@ router.get('/timetables', async (req, res) => {
   try {
     const processed = await getProcessedData();
     res.json({ success: true, data: processed.timetables });
-  } catch (error: any) {
+  } catch (error) {
     res.status(500).json({ 
-      error: 'Failed to fetch timetables',
-      message: error.message 
+      error: 'Failed to fetch timetables'
     });
   }
 });
@@ -80,10 +78,9 @@ router.get('/faculty', async (req, res) => {
   try {
     const processed = await getProcessedData();
     res.json({ success: true, data: processed.faculty });
-  } catch (error: any) {
+  } catch (error) {
     res.status(500).json({ 
-      error: 'Failed to fetch faculty data',
-      message: error.message 
+      error: 'Failed to fetch faculty data'
     });
   }
 });
@@ -96,10 +93,9 @@ router.get('/departments', async (req, res) => {
   try {
     const processed = await getProcessedData();
     res.json({ success: true, data: processed.departments });
-  } catch (error: any) {
+  } catch (error) {
     res.status(500).json({ 
-      error: 'Failed to fetch departments',
-      message: error.message 
+      error: 'Failed to fetch departments'
     });
   }
 });

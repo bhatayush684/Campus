@@ -149,6 +149,7 @@ the hosting provider in production.
 | `CORS_ORIGIN` | Production | — | Comma-separated allowed browser origins |
 | `WCE_BASE_URLS` | No | Three supported WCE domains | Scraper roots |
 | `SCRAPE_MAX_DEPTH` | No | `1` | Maximum crawl depth |
+| `SCRAPE_MAX_PAGES` | No | `20` | Maximum pages crawled per configured source root |
 | `SMOKE_BASE_URL` | No | `http://localhost:3001` | Base URL used by smoke tests |
 
 ## API endpoints
@@ -177,6 +178,12 @@ The data routes use a short-lived in-memory cache and a bounded refresh. If a
 source site is slow or unavailable, the API returns the most recent snapshot
 when available, or a valid empty structured response instead of hanging
 indefinitely.
+
+In production, set `CORS_ORIGIN` to the exact frontend origin(s); the server
+does not permit arbitrary cross-origin requests. Scraping uses certificate
+validation and HTTPS-only allowlisted sources. If an official source has an
+invalid or incomplete certificate, live scraping is rejected and the
+offline-safe curated data remains available.
 
 ## Production build and validation
 

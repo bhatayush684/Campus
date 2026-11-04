@@ -34,7 +34,7 @@ const requestHeaders = { 'user-agent': 'CampusMind/1.0 (+https://github.com/bhat
 
 function requestHtml(url: URL): Promise<string> {
   return new Promise((resolve, reject) => {
-    const request = https.get(url, { headers: requestHeaders, rejectUnauthorized: false }, response => {
+    const request = https.get(url, { headers: requestHeaders }, response => {
       if (response.statusCode && response.statusCode >= 400) {
         response.resume();
         reject(new Error(`Website returned HTTP ${response.statusCode}`));
@@ -115,7 +115,7 @@ function extractLinks(html: string, pageUrl: string) {
 export class ScraperService {
   async scrapePage(url: string): Promise<ScrapedData> {
     const parsedUrl = new URL(url);
-    if (!allowedHosts.has(parsedUrl.hostname.toLowerCase())) {
+    if (parsedUrl.protocol !== 'https:' || !allowedHosts.has(parsedUrl.hostname.toLowerCase())) {
       throw new Error('Only the configured Walchand College domains are allowed');
     }
     const html = await requestHtml(parsedUrl);
@@ -127,17 +127,20 @@ export class ScraperService {
   }
 
   async crawlWebsite(startUrl: string, maxDepth = 1): Promise<ScrapedData[]> {
+    const boundedDepth = Number.isInteger(maxDepth) ? Math.max(0, Math.min(maxDepth, 2)) : 1;
+    const configuredPageLimit = Number(process.env.SCRAPE_MAX_PAGES || 20);
+    const maxPages = Number.isInteger(configuredPageLimit) ? Math.max(1, Math.min(configuredPageLimit, 50)) : 20;
     const queue: Array<{ url: string; depth: number }> = [{ url: startUrl, depth: 0 }];
     const visited = new Set<string>();
     const results: ScrapedData[] = [];
-    while (queue.length && results.length < 50) {
+    while (queue.length && results.length < maxPages) {
       const current = queue.shift();
       if (!current || visited.has(current.url)) continue;
       visited.add(current.url);
       try {
         const page = await this.scrapePage(current.url);
         results.push(page);
-        if (current.depth < maxDepth) {
+        if (current.depth < boundedDepth) {
           for (const link of page.links) {
             const parsed = new URL(link);
             if (allowedHosts.has(parsed.hostname.toLowerCase()) && !visited.has(link)) {
