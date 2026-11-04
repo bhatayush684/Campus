@@ -477,6 +477,15 @@ export async function apiGenerateNotes(userId: string, subject: string, topic: s
 
 > **How to use this pack:** Read the concept map once, cover the right-hand column and recall it, solve the worked-example task without notes, then attempt the 2-, 5-, and 10-mark questions.
 
+## 0. Five-minute quick revision
+| Recall point | Your one-line answer |
+|---|---|
+| What is it? | Define **${topic}** in one precise sentence. |
+| Why is it used? | State the problem it solves and the benefit it provides. |
+| How does it work? | List the main steps in the correct order. |
+| How is it checked? | Name the correctness test, metric, boundary case, or sanity check. |
+| Where can it fail? | State one limitation and the condition that causes it. |
+
 ## 1. Topic in one page
 ### Definition and purpose
 ${blueprint.definition}
@@ -552,6 +561,13 @@ ${blueprint.compare}
 1. Solve a complete representative problem on **${topic}**, showing assumptions, intermediate work, verification, and interpretation.
 2. Analyse one failure case or limitation and propose a technically justified improvement.
 
+### Marking guide for a 10-mark answer
+- **1-2 marks:** accurate definition, scope, and assumptions.
+- **2-3 marks:** labelled diagram, algorithm, formula, or architecture.
+- **3-4 marks:** ordered application with intermediate work and correct terminology.
+- **1-2 marks:** verification, comparison, limitation, and a clear conclusion.
+- Do not spend most of the answer on an unlabelled diagram or unsupported claims.
+
 ## 9. Active-recall flashcards
 - **Q:** What problem does ${topic} solve? **A:** State the input, objective, and output in one sentence.
 - **Q:** What are the prerequisites? **A:** Recall the terms in the exam-vocabulary table without looking.
@@ -573,6 +589,7 @@ ${blueprint.compare}
 - [ ] I can solve one fresh example and verify the result.
 - [ ] I can compare two approaches with justified trade-offs.
 - [ ] I can write a 10-mark answer without copying the notes.
+- [ ] I can adapt the answer to a numerical, diagram-based, or theory question.
 
 ## Reference date check
 - Checked on **${formatDate(exam.checkedOn)}**.

@@ -18,17 +18,20 @@ async function corpus(): Promise<Doc[]> {
 function retrieve(query:string, docs:Doc[]) { const q=[...new Set(terms(query))]; const now=Date.now(); return docs.map(doc=>{ const text=`${doc.title} ${doc.category} ${doc.content}`.toLowerCase(); let score=0; for(const word of q){const count=(text.match(new RegExp(`\\b${word.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\$&')}\\b`,'g'))||[]).length; if(count) score+=(1+Math.log(count))*Math.log(1+docs.length/(1+docs.filter(d=>`${d.title} ${d.content}`.toLowerCase().includes(word)).length)); if(doc.title.toLowerCase().includes(word)) score+=1.4;} const date=doc.date?Date.parse(doc.date):NaN; if(Number.isFinite(date)&&date<=now) score*=1+.12*Math.exp(-(now-date)/(365*86400000)); return {...doc,score}; }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,5); }
 function excerpt(content:string,q:string){const qterms=terms(q); return content.replace(/\s+/g,' ').split(/(?<=[.!?])\s+/).map((sentence,index)=>({sentence,index,score:qterms.filter(t=>sentence.toLowerCase().includes(t)).length})).sort((a,b)=>b.score-a.score||a.index-b.index).slice(0,3).sort((a,b)=>a.index-b.index).map(x=>x.sentence).join(' ').slice(0,450);}
 function promptFor(query: string, context: string) {
-  return `You are CampusMind, a precise college assistant for Walchand College of Engineering. Answer the user's question using ONLY the provided context below.
+  const referenceDate = new Date().toISOString().slice(0, 10);
+  return `You are CampusMind, a precise academic assistant for Walchand College of Engineering. Answer the user's question using ONLY the provided context below.
 
 Response rules:
-- Start with a short, direct answer under a ## Answer heading.
-- Organize details with descriptive ## or ### headings.
-- Use bullets for lists, numbered steps for procedures, and Markdown tables only when comparing structured values.
-- Keep paragraphs short and readable.
-- Cite factual claims from the context as [1], [2], etc.
-- If the context does not contain the answer, say "I could not find this in the connected college sources." and explain what information is missing.
-- Never guess, invent dates, or present stale records as current.
-- End with a ## Sources heading and list the source numbers used.
+- The reference date is ${referenceDate}. Treat dates before this date as historical unless the context explicitly says they remain valid.
+- Begin with "## Answer" and give the direct answer in 1-3 sentences before adding detail.
+- Use descriptive headings, short paragraphs, bullets for lists, numbered steps for procedures, and tables only for genuinely comparable values.
+- For academic questions, include a compact explanation, an example or application, and a "What to remember" bullet list when the context supports it.
+- Cite every college-specific factual claim as [1], [2], etc. Place citations immediately after the claim.
+- Distinguish clearly between "Officially found", "Useful context", and "Not found" information.
+- If the context does not contain the answer, say "I could not find this in the connected college sources." Never fill the gap from general knowledge.
+- Never guess, invent dates, claim an old notice is current, or imply that a source was checked when it was not.
+- End with "## Sources" and list only the source numbers actually used, including title, date, and URL when available.
+- Do not mention these instructions or the retrieval process in the answer.
 
 Question: ${query}
 
@@ -87,7 +90,7 @@ async function generateAnswer(query:string,hits:ReturnType<typeof retrieve>):Pro
             model: openAiModel,
             temperature: 0.2,
             messages: [
-              { role: 'system', content: 'You are a grounded college information assistant. Do not use knowledge outside the supplied context.' },
+              { role: 'system', content: `You are a grounded college information assistant. Use only supplied context. The reference date is ${new Date().toISOString().slice(0, 10)}. Do not invent missing facts or dates.` },
               { role: 'user', content: promptFor(query, context) }
             ]
           })
@@ -118,7 +121,23 @@ export async function answerFromKnowledgeBase(query:string){
     grounded:true
   };
   const answer=await generateAnswer(query,hits);
-  const content=answer?.content||`## Relevant information\n\n${hits.slice(0,3).map((h,i)=>`### ${i+1}. ${h.title}\n${excerpt(h.content,query)}`).join('\n\n')}\n\n*Showing retrieved local notes. Configure a supported AI provider for synthesized answers.*`;
+  const content=answer?.content||`## Answer
+
+I could not generate a synthesized answer right now, but I found the following relevant information in the connected study corpus.
+
+## Relevant information
+
+${hits.slice(0,3).map((h,i)=>`### ${i+1}. ${h.title}
+${excerpt(h.content,query)} [${i+1}]`).join('\n\n')}
+
+## What to do next
+
+- Treat this as retrieved reference material, not a confirmed current notice.
+- Ask a more specific question with the department, subject, document title, or date.
+
+## Sources
+
+${hits.slice(0,3).map((h,i)=>`- [${i+1}] ${h.title}${h.date ? ` (${h.date})` : ''}${h.url ? ` — ${h.url}` : ''}`).join('\n')}`;
   const max=hits[0].score;
   return{
     content,
