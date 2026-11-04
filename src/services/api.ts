@@ -52,6 +52,74 @@ function currentExamReference(subject: string, department?: string, requestedDat
   };
 }
 
+function markdownCell(value: string) {
+  return value.replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
+}
+
+function topicWords(value: string) {
+  return new Set(value.toLowerCase().match(/[a-z0-9]+/g)?.filter(word => word.length > 2) || []);
+}
+
+function relevantUnits(units: NonNullable<ScrapedSyllabus['units']>, topic: string) {
+  const requestedWords = topicWords(topic);
+  return units
+    .map(unit => {
+      const words = topicWords(`${unit.title} ${unit.topics}`);
+      const overlap = [...requestedWords].filter(word => words.has(word)).length;
+      return { unit, score: overlap + (topic.toLowerCase().includes(unit.title.toLowerCase()) ? 3 : 0) };
+    })
+    .sort((a, b) => b.score - a.score || a.unit.unit - b.unit.unit)
+    .filter(item => item.score > 0)
+    .map(item => item.unit);
+}
+
+function topicBlueprint(subject: string, topic: string) {
+  const value = `${subject} ${topic}`.toLowerCase();
+  if (value.includes('normal') || value.includes('database') || value.includes('sql')) {
+    return {
+      definition: 'A database concept should be explained through its data model, constraints, operation, and effect on correctness or performance.',
+      mechanism: 'Start with the relation/schema, state the dependency or query requirement, apply the rule step by step, and verify the resulting data is lossless and dependency-preserving where applicable.',
+      worked: 'Use a small relation with named attributes and show each transformation or query result. State every assumption before deriving the answer.',
+      compare: '| Criterion | Normalized relational design | Denormalized design |\\n|---|---|---|\\n| Redundancy | Lower | Higher |\\n| Read performance | May require joins | Often faster for reads |\\n| Update anomalies | Reduced | Must be controlled |',
+      formula: '`Lossless join` and `dependency preservation` must be checked explicitly; do not claim a decomposition is correct without showing the test or reasoning.'
+    };
+  }
+  if (value.includes('network') || value.includes('tcp') || value.includes('routing') || value.includes('subnet')) {
+    return {
+      definition: 'A networking answer is strongest when it identifies the layer, packet fields/state, sender-receiver sequence, and the failure or control mechanism.',
+      mechanism: 'Draw the flow from sender to receiver, label each transition, then explain acknowledgements, timers, windows, routing decisions, or address calculations in order.',
+      worked: 'For a numerical problem, write the given values, convert units or binary fields, show the intermediate calculation, and finish with a sanity check.',
+      compare: '| Criterion | TCP | UDP |\\n|---|---|---|\\n| Connection | Connection-oriented | Connectionless |\\n| Reliability | Ordered delivery and retransmission | Application-dependent |\\n| Typical use | Web, file transfer | Streaming, DNS, real-time traffic |',
+      formula: '`Throughput`, `delay`, `window size`, and `CIDR prefix` calculations must include units and a final interpretation.'
+    };
+  }
+  if (value.includes('operating system') || value.includes('scheduling') || value.includes('deadlock') || value.includes('paging')) {
+    return {
+      definition: 'An operating-systems answer should connect the resource, process state, policy/algorithm, and measurable outcome such as waiting time, throughput, safety, or page faults.',
+      mechanism: 'List the initial state, apply one transition at a time, update the relevant table or queue, and explain why the next transition is valid.',
+      worked: 'Use a timeline, allocation table, or page-reference table. Show each row rather than jumping to the final average or safe sequence.',
+      compare: '| Criterion | Preemptive policy | Non-preemptive policy |\\n|---|---|---|\\n| Context switches | More likely | Fewer |\\n| Response time | Usually better | May be worse |\\n| Complexity | Higher | Simpler |',
+      formula: '`Turnaround time = completion time − arrival time`; always define the metric before calculating it.'
+    };
+  }
+  if (value.includes('machine learning') || value.includes('regression') || value.includes('classification') || value.includes('clustering') || value.includes('svm')) {
+    return {
+      definition: 'A machine-learning answer should identify the task, data representation, objective/loss, training procedure, evaluation metric, and generalization risk.',
+      mechanism: 'Describe the input features and target, explain how parameters are learned, state the decision rule, and separate training, validation, and test behavior.',
+      worked: 'Use a tiny dataset or symbolic example. Show the prediction, loss or split decision, parameter update, and the meaning of the result.',
+      compare: '| Criterion | Supervised learning | Unsupervised learning |\\n|---|---|---|\\n| Target labels | Required | Not required |\\n| Main goal | Predict a target | Discover structure |\\n| Typical evaluation | Accuracy, F1, RMSE | Silhouette, WCSS, qualitative analysis |',
+      formula: 'State the loss or objective before discussing optimization. Include the effect of regularization, hyperparameters, and data leakage when relevant.'
+    };
+  }
+  return {
+    definition: `Define **${topic}** in one sentence, then state its purpose, inputs, outputs, assumptions, and the problem it solves.`,
+    mechanism: `Explain **${topic}** as a sequence: prerequisites → input → core operation → output → verification. Use the syllabus terms below as the vocabulary for the answer.`,
+    worked: `Create a small representative example for **${topic}**. Show the given values, each intermediate step, and a final interpretation instead of only stating the result.`,
+    compare: '| Criterion | Approach A | Approach B |\\n|---|---|---|\\n| Main idea | State the defining idea | State the closest alternative |\\n| Strength | When it is useful | When it is useful |\\n| Limitation | What can go wrong | What can go wrong |',
+    formula: 'Include a formula, diagram, pseudocode block, or labelled process only when it is supported by your course material.'
+  };
+}
+
 // ─── AUTH ───────────────────────────────────────────────────────────────────
 
 /**
@@ -385,12 +453,19 @@ export async function apiGenerateNotes(userId: string, subject: string, topic: s
   
   const syllabus = syllabusFor(subject);
   const units = syllabus?.units || [];
-  const selectedUnits = units.filter(unit => `${unit.title} ${unit.topics}`.toLowerCase().includes(topic.toLowerCase().split(/\s+/)[0])).slice(0, 5);
+  const selectedUnits = relevantUnits(units, topic);
   const outline = (selectedUnits.length ? selectedUnits : units).slice(0, 6);
+  const blueprint = topicBlueprint(subject, topic);
   const exam = currentExamReference(subject, syllabus?.department);
   const unitRows = outline.length
     ? outline.map(unit => `| Unit ${unit.unit} | ${unit.title} | ${unit.topics} |`).join('\n')
     : '| - | Topic-specific outline unavailable | Verify against the linked syllabus and lecturer notes. |';
+  const vocabulary = outline
+    .flatMap(unit => unit.topics.split(/[,;|]/).map(item => item.trim()).filter(Boolean))
+    .slice(0, 12);
+  const vocabularyRows = vocabulary.length
+    ? vocabulary.map((item, index) => `| ${index + 1} | ${markdownCell(item)} | Define it, state its role, and connect it to ${topic}. |`).join('\n')
+    : `| 1 | ${markdownCell(topic)} | Verify the definition from the official syllabus or lecturer notes. |`;
   const content = `# ${topic}
 
 ## Subject context
@@ -398,46 +473,112 @@ export async function apiGenerateNotes(userId: string, subject: string, topic: s
 - **Course code:** ${syllabus?.courseCode || 'Not matched to the local syllabus'}
 - **Source status:** ${syllabus ? 'Matched to the WCE syllabus dataset' : 'No exact syllabus match; verify against your course material'}
 - **Generated:** ${formatDate(new Date().toISOString().slice(0, 10))}
+- **Study mode:** Learn → practise → retrieve → revise
 
-## Exam-ready summary
-${syllabus?.description || `This note is organized around "${topic}". Verify definitions, formulas, and examples against the official course material.`}
+> **How to use this pack:** Read the concept map once, cover the right-hand column and recall it, solve the worked-example task without notes, then attempt the 2-, 5-, and 10-mark questions.
 
-## Syllabus map
+## 1. Topic in one page
+### Definition and purpose
+${blueprint.definition}
+
+### Core mechanism
+${blueprint.mechanism}
+
+### Why it matters
+${syllabus?.description || `This topic matters because it gives a systematic way to solve, analyse, or compare problems in ${subject}. Connect each claim to the syllabus and your lecturer's examples.`}
+
+### Exam vocabulary
+| # | Term from the matched syllabus | What you must be able to say |
+|---|---|---|
+${vocabularyRows}
+
+## 2. Syllabus alignment
 | Unit | Focus | Topics from the syllabus |
 |---|---|---|
 ${unitRows}
 
-## Learn this in order
-1. **Prerequisites:** List the definitions and assumptions needed before starting ${topic}.
-2. **Core idea:** Explain the input, process, output, and invariants in your own words.
-3. **Worked example:** Solve one representative problem step by step without looking at the answer.
-4. **Compare and apply:** Record one alternative, one limitation, and one practical application.
-5. **Recall:** Close the notes and reproduce the key diagram, formula, algorithm, or SQL/pseudocode.
+## 3. Learn it step by step
+1. **Prerequisites:** Write the definitions and assumptions required before starting ${topic}.
+2. **Represent:** Draw the relevant architecture, relation/schema, state diagram, graph, timeline, or model.
+3. **Execute:** Apply the algorithm or process to a small example and show every intermediate state.
+4. **Verify:** Check correctness, units, boundary cases, complexity, safety, or evaluation metric as appropriate.
+5. **Generalise:** Explain when the method works, when it fails, and what alternative you would choose.
 
-## Exam answer framework
-1. Definition and purpose.
-2. Labeled diagram, algorithm, or schema where relevant.
-3. Step-by-step explanation.
-4. One example with assumptions stated.
-5. Complexity, trade-off, or limitation only when supported by the course material.
+## 4. Worked-example blueprint
+${blueprint.worked}
 
-## Self-test questions
-- Define ${topic} and state the assumptions it depends on.
-- Work through a representative example and justify every step.
-- Compare it with the closest alternative using correctness, time, space, and practical constraints.
-- What common mistake causes an incorrect result, and how would you detect it?
+### Answer layout
+\`\`\`text
+Given / assumptions:
+Required:
+Representation or diagram:
+Step 1:
+Step 2:
+Verification:
+Final answer and interpretation:
+\`\`\`
 
-## Revision checklist
-- [ ] I can define the concept without notes.
-- [ ] I can solve one fresh example.
-- [ ] I can draw or reproduce the relevant structure.
-- [ ] I can answer the self-test questions in exam format.
+## 5. Formula, algorithm, or decision checklist
+${blueprint.formula}
+
+- Define every symbol before substituting values.
+- Keep units and indexing consistent.
+- State the stopping condition or decision boundary.
+- Check one edge case or limiting case.
+- End with a sentence explaining what the result means.
+
+## 6. Compare and choose
+${blueprint.compare}
+
+**Decision rule:** Choose an approach only after stating the input conditions, objective, constraints, and trade-off. Never compare methods using a single metric.
+
+## 7. Common mistakes to avoid
+- Writing a definition without explaining purpose or assumptions.
+- Listing steps without showing the state or intermediate calculation.
+- Using a formula without defining symbols or units.
+- Confusing training/performance metrics, or reporting a result without interpretation.
+- Claiming a date, rule, or syllabus detail that is not present in the cited source.
+
+## 8. Exam practice ladder
+### 2-mark recall
+1. Define **${topic}** and name one use.
+2. State two assumptions, properties, or terms associated with it.
+
+### 5-mark understanding
+1. Explain **${topic}** with a labelled diagram, sequence, or small example.
+2. Compare it with the closest alternative and justify when each is preferred.
+
+### 10-mark application
+1. Solve a complete representative problem on **${topic}**, showing assumptions, intermediate work, verification, and interpretation.
+2. Analyse one failure case or limitation and propose a technically justified improvement.
+
+## 9. Active-recall flashcards
+- **Q:** What problem does ${topic} solve? **A:** State the input, objective, and output in one sentence.
+- **Q:** What are the prerequisites? **A:** Recall the terms in the exam-vocabulary table without looking.
+- **Q:** What is the critical step? **A:** Explain the transition that changes the input into the output.
+- **Q:** How do you verify the answer? **A:** Name the correctness, metric, boundary, or sanity check.
+- **Q:** What is the closest alternative? **A:** Give one advantage and one limitation of each.
+
+## 10. Revision schedule
+| Session | Task | Evidence of mastery |
+|---|---|---|
+| Today | Read the one-page summary and redraw the core representation | Explain it aloud in 90 seconds |
+| Tomorrow | Solve the worked-example blueprint from memory | No skipped intermediate steps |
+| In 3 days | Attempt the 2- and 5-mark questions | Correct definitions and comparisons |
+| In 7 days | Attempt the 10-mark question under time pressure | Complete, verified, exam-ready answer |
+
+## 11. Final readiness checklist
+- [ ] I can define the topic, its purpose, inputs, outputs, and assumptions.
+- [ ] I can reproduce the relevant diagram, formula, algorithm, or schema.
+- [ ] I can solve one fresh example and verify the result.
+- [ ] I can compare two approaches with justified trade-offs.
+- [ ] I can write a 10-mark answer without copying the notes.
 
 ## Reference date check
 - Checked on **${formatDate(exam.checkedOn)}**.
 - ${exam.official ? `The local dataset has a future reference for **${exam.official.subject || subject}** on **${formatDate(exam.official.date)}**. Confirm the official notice before treating it as final.` : 'No future official exam reference matched this topic. Do not infer an exam date from older notices.'}
 
-## Source
+## Sources and verification
 ${syllabus?.syllabusUrl || 'WCE syllabus source was not matched for this subject.'}`;
 
   const notes: GeneratedNotes = {

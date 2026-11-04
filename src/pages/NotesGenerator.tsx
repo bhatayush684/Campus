@@ -106,7 +106,7 @@ export default function NotesGenerator() {
       setNotes(result);
       toast.success('Study notes generated with exam blueprints!');
     } catch (error) {
-      toast.error('Failed to generate study notes');
+      toast.error(error instanceof Error ? error.message : 'Failed to generate study notes');
     } finally {
       setGenerating(false);
     }
