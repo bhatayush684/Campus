@@ -1,5 +1,6 @@
 import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'sonner';
+import { Analytics } from '@vercel/analytics/react';
 import AppRouter from './router';
 import { useSettingsStore } from './store/settingsStore';
 import { useEffect } from 'react';
@@ -33,6 +34,7 @@ function App() {
           }}
           richColors
         />
+        <Analytics />
       </BrowserRouter>
     </AppErrorBoundary>
   );
