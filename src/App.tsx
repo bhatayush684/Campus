@@ -2,19 +2,17 @@ import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import AppRouter from './router';
 import { useSettingsStore } from './store/settingsStore';
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import CommandPalette from './components/common/CommandPalette';
 import AppErrorBoundary from './components/common/AppErrorBoundary';
 
 function App() {
   const theme = useSettingsStore(s => s.theme);
 
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle('dark', theme === 'dark');
+    root.style.colorScheme = theme;
   }, [theme]);
 
   return (

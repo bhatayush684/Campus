@@ -10,7 +10,9 @@ export default function ThemeToggle() {
       whileTap={{ scale: 0.9 }}
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
       className="btn-ghost p-2 rounded-lg"
-      aria-label="Toggle theme"
+      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+      aria-pressed={theme === 'dark'}
+      title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
     >
       <motion.div
         key={theme}
