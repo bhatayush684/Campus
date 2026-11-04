@@ -27,6 +27,16 @@ router.get('/status', async (_req, res) => {
   if (apiKey && apiKey !== 'your_google_ai_api_key_here') {
     res.json({ ready: true, provider: 'google-gemini', model: googleModel, models: googleModels, fallback: 'local-retrieval' });
   } else {
+    const openAiKey = process.env.OPENAI_API_KEY;
+    if (openAiKey && openAiKey !== 'your_openai_api_key_here') {
+      return res.json({
+        ready: true,
+        provider: 'openai',
+        model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+        models: [process.env.OPENAI_MODEL || 'gpt-4o-mini'],
+        fallback: 'local-retrieval'
+      });
+    }
     const ollamaUrl = process.env.OLLAMA_URL || 'http://127.0.0.1:11434';
     try {
       const response = await fetch(`${ollamaUrl}/api/tags`, { signal: AbortSignal.timeout(1500) });

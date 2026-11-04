@@ -14,8 +14,8 @@ answer.
 ## What is included
 
 - **AI chat** — grounded answers based on the local WCE data corpus, with
-  Markdown formatting, citations, source excerpts, model fallback, and local
-  retrieval fallback.
+  Markdown formatting, citations, source excerpts, Gemini/OpenAI provider
+  fallback, and local retrieval fallback.
 - **Study Plan** — department and exam-date planning based on syllabus units,
   estimated workload, priorities, active recall, practice, revision, daily
   targets, and completion tracking.
@@ -144,6 +144,8 @@ the hosting provider in production.
 | `NODE_ENV` | No | `development` | Runtime environment |
 | `GOOGLE_AI_API_KEY` | Recommended | — | Gemini authentication |
 | `GOOGLE_AI_MODEL` | No | `gemini-3-flash-preview,gemini-3.1-flash-lite` | Comma-separated fallback model chain |
+| `OPENAI_API_KEY` | Optional fallback | — | OpenAI authentication; server-side only |
+| `OPENAI_MODEL` | No | `gpt-4o-mini` | OpenAI fallback model |
 | `CORS_ORIGIN` | Production | — | Comma-separated allowed browser origins |
 | `WCE_BASE_URLS` | No | Three supported WCE domains | Scraper roots |
 | `SCRAPE_MAX_DEPTH` | No | `1` | Maximum crawl depth |
@@ -323,13 +325,21 @@ deploy/             Nginx configuration
 ### AI returns an error
 
 1. Check `GET /api/chat/status`.
-2. Confirm `GOOGLE_AI_API_KEY` exists in the Render environment.
+2. Confirm `GOOGLE_AI_API_KEY` exists in the Render environment, or configure
+   `OPENAI_API_KEY` as a fallback secret.
 3. Confirm the configured model is available to the key.
 4. Inspect Render logs.
 5. Retry with a specific course, notice, subject, or date.
 
 The backend should still return local retrieved content when Gemini is
-temporarily unavailable.
+temporarily unavailable. If Gemini fails and `OPENAI_API_KEY` is configured,
+the backend tries OpenAI before using local retrieval.
+
+### Exposed or pasted API keys
+
+Never paste API keys into source code, issues, chat, screenshots, or commits.
+If a key has been shared, revoke it immediately, create a replacement, and
+store the replacement only in `server/.env` locally or as a Render secret.
 
 ### Vercel route returns 404
 

@@ -3,6 +3,7 @@ import path from 'node:path';
 
 type Doc = { id: string; title: string; category: string; date?: string; url?: string; content: string };
 const defaultGoogleModel = 'gemini-3-flash-preview,gemini-3.1-flash-lite';
+const defaultOpenAIModel = 'gpt-4o-mini';
 const transientProviderStatuses = new Set([429, 500, 502, 503, 504]);
 const terms = (s: string) => s.toLowerCase().match(/[\p{L}\p{N}]+/gu)?.filter(x => x.length > 2 && !'the and for are was with from about what when where who how does this that'.split(' ').includes(x)) ?? [];
 const dataPath = path.resolve(process.cwd(), '../public/scraped');
@@ -16,9 +17,29 @@ async function corpus(): Promise<Doc[]> {
 }
 function retrieve(query:string, docs:Doc[]) { const q=[...new Set(terms(query))]; const now=Date.now(); return docs.map(doc=>{ const text=`${doc.title} ${doc.category} ${doc.content}`.toLowerCase(); let score=0; for(const word of q){const count=(text.match(new RegExp(`\\b${word.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\$&')}\\b`,'g'))||[]).length; if(count) score+=(1+Math.log(count))*Math.log(1+docs.length/(1+docs.filter(d=>`${d.title} ${d.content}`.toLowerCase().includes(word)).length)); if(doc.title.toLowerCase().includes(word)) score+=1.4;} const date=doc.date?Date.parse(doc.date):NaN; if(Number.isFinite(date)&&date<=now) score*=1+.12*Math.exp(-(now-date)/(365*86400000)); return {...doc,score}; }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,5); }
 function excerpt(content:string,q:string){const qterms=terms(q); return content.replace(/\s+/g,' ').split(/(?<=[.!?])\s+/).map((sentence,index)=>({sentence,index,score:qterms.filter(t=>sentence.toLowerCase().includes(t)).length})).sort((a,b)=>b.score-a.score||a.index-b.index).slice(0,3).sort((a,b)=>a.index-b.index).map(x=>x.sentence).join(' ').slice(0,450);}
-async function generateAnswer(query:string,hits:ReturnType<typeof retrieve>):Promise<string|null>{
+function promptFor(query: string, context: string) {
+  return `You are CampusMind, a precise college assistant for Walchand College of Engineering. Answer the user's question using ONLY the provided context below.
+
+Response rules:
+- Start with a short, direct answer under a ## Answer heading.
+- Organize details with descriptive ## or ### headings.
+- Use bullets for lists, numbered steps for procedures, and Markdown tables only when comparing structured values.
+- Keep paragraphs short and readable.
+- Cite factual claims from the context as [1], [2], etc.
+- If the context does not contain the answer, say "I could not find this in the connected college sources." and explain what information is missing.
+- Never guess, invent dates, or present stale records as current.
+- End with a ## Sources heading and list the source numbers used.
+
+Question: ${query}
+
+Context:
+${context}`;
+}
+
+type GeneratedAnswer = { content: string; model: string; provider: string };
+
+async function generateAnswer(query:string,hits:ReturnType<typeof retrieve>):Promise<GeneratedAnswer|null>{
   const apiKey = process.env.GOOGLE_AI_API_KEY;
-  if (!apiKey || apiKey === 'your_google_ai_api_key_here') return null;
   const models = (process.env.GOOGLE_AI_MODEL || defaultGoogleModel)
     .split(',')
     .map(model => model.trim())
@@ -26,46 +47,62 @@ async function generateAnswer(query:string,hits:ReturnType<typeof retrieve>):Pro
 
   const context = hits.map((h,i)=>`[${i+1}] ${h.title} (${h.category}; date ${h.date||'not supplied'})\n${h.content.slice(0,4000)}`).join('\n\n');
 
-  for (const model of models) {
+  if (apiKey && apiKey !== 'your_google_ai_api_key_here') {
+    for (const model of models) {
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        try {
+          const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            signal: AbortSignal.timeout(30000),
+            body: JSON.stringify({ contents: [{ parts: [{ text: promptFor(query, context) }] }] })
+          });
+          if (r.ok) {
+            const data = await r.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
+            const content = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+            if (content) return { content, model, provider: 'google-gemini' };
+          }
+          const details = (await r.text()).slice(0, 500);
+          console.error(`Google AI API error (${model}, attempt ${attempt + 1}):`, r.status, details);
+          if (!transientProviderStatuses.has(r.status)) break;
+          if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 750));
+        } catch (error) {
+          console.error(`Google AI request failed (${model}, attempt ${attempt + 1}):`, error);
+          if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 750));
+        }
+      }
+    }
+  }
+
+  const openAiKey = process.env.OPENAI_API_KEY;
+  const openAiModel = process.env.OPENAI_MODEL || defaultOpenAIModel;
+  if (openAiKey && openAiKey !== 'your_openai_api_key_here') {
     for (let attempt = 0; attempt < 2; attempt += 1) {
       try {
-        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`,{
-          method:'POST',
-          headers:{'content-type':'application/json'},
-          signal:AbortSignal.timeout(30000),
-          body:JSON.stringify({
-            contents:[{
-              parts:[{
-                text:`You are CampusMind, a precise college assistant for Walchand College of Engineering. Answer the user's question using ONLY the provided context below.
-
-Response rules:
-- Start with a short, direct answer under a ## Answer heading.
-- Organize details with descriptive ## or ### headings.
-- Use bullets for lists, numbered steps for procedures, and a Markdown table only when comparing structured values.
-- Keep paragraphs short and readable.
-- Cite every factual claim from the context as [1], [2], etc.
-- If the context does not contain the answer, say "I could not find this in the connected college sources." and explain what information is missing. Do not guess, use outside knowledge, or invent dates.
-- End with a ## Sources heading and list the source numbers used.
-
-Question: ${query}
-
-Context:
-${context}`
-              }]
-            }]
+        const r = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', Authorization: `Bearer ${openAiKey}` },
+          signal: AbortSignal.timeout(30000),
+          body: JSON.stringify({
+            model: openAiModel,
+            temperature: 0.2,
+            messages: [
+              { role: 'system', content: 'You are a grounded college information assistant. Do not use knowledge outside the supplied context.' },
+              { role: 'user', content: promptFor(query, context) }
+            ]
           })
         });
         if (r.ok) {
-          const data = await r.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
-          return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
+          const data = await r.json() as { choices?: Array<{ message?: { content?: string } }> };
+          const content = data.choices?.[0]?.message?.content?.trim();
+          if (content) return { content, model: openAiModel, provider: 'openai' };
         }
-
         const details = (await r.text()).slice(0, 500);
-        console.error(`Google AI API error (${model}, attempt ${attempt + 1}):`, r.status, details);
+        console.error(`OpenAI API error (attempt ${attempt + 1}):`, r.status, details);
         if (!transientProviderStatuses.has(r.status)) break;
         if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 750));
       } catch (error) {
-        console.error(`Google AI request failed (${model}, attempt ${attempt + 1}):`, error);
+        console.error(`OpenAI request failed (attempt ${attempt + 1}):`, error);
         if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 750));
       }
     }
@@ -81,7 +118,7 @@ export async function answerFromKnowledgeBase(query:string){
     grounded:true
   };
   const answer=await generateAnswer(query,hits);
-  const content=answer||`## Relevant information\n\n${hits.slice(0,3).map((h,i)=>`### ${i+1}. ${h.title}\n${excerpt(h.content,query)}`).join('\n\n')}\n\n*Showing retrieved local notes. Configure Google AI API key for synthesized answers.*`;
+  const content=answer?.content||`## Relevant information\n\n${hits.slice(0,3).map((h,i)=>`### ${i+1}. ${h.title}\n${excerpt(h.content,query)}`).join('\n\n')}\n\n*Showing retrieved local notes. Configure a supported AI provider for synthesized answers.*`;
   const max=hits[0].score;
   return{
     content,
@@ -95,7 +132,8 @@ export async function answerFromKnowledgeBase(query:string){
       relevance:Math.round(h.score/max*100),
       url:h.url||null
     })),
-    model:answer?(process.env.GOOGLE_AI_MODEL || defaultGoogleModel).split(',')[0].trim():'local-retrieval',
+    model:answer?.model || 'local-retrieval',
+    provider: answer?.provider || 'local-retrieval',
     grounded:true
   };
 }
