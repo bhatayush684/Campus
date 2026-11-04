@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { toast } from 'sonner';
+import studyMateResources from '../data/scraped/studymate_resources.json';
 
 // ── Types ──────────────────────────────────────────────────────────────
 interface ScrapedDoc {
@@ -79,6 +80,11 @@ const WCE_LINKS: ScrapedDoc[] = [
 
 const ALL_CATEGORIES = ['All', 'Study Notes', 'Syllabus', 'Timetable', 'Examination', 'Results', 'Circular', 'Accreditation', 'Admission', 'Fees', 'Placement', 'Academic', 'About', 'Campus Life', 'Document'];
 const ALL_DEPARTMENTS = ['All', 'General', 'CSE', 'IT', 'ENTC', 'Civil', 'Mechanical', 'Electrical', 'AI/ML', 'Robotics'];
+
+const studyMateDocs: ScrapedDoc[] = studyMateResources.map((resource) => ({
+  ...resource,
+  type: resource.type === 'PDF' ? 'PDF' : 'LINK',
+}));
 
 const CAT_ICONS: Record<string, any> = {
   'Study Notes': BookOpen,
@@ -212,7 +218,7 @@ export default function Downloads() {
     loadScraped();
   }, []);
 
-  const allDocs = [...WCE_LINKS, ...scrapedDocs].filter((d, i, a) => a.findIndex(x => x.url === d.url) === i);
+  const allDocs = [...WCE_LINKS, ...scrapedDocs, ...studyMateDocs].filter((d, i, a) => a.findIndex(x => x.url === d.url) === i);
 
   const filtered = allDocs.filter(d => {
     const q = search.toLowerCase();
@@ -251,7 +257,7 @@ export default function Downloads() {
               Downloads & Resources
             </h1>
             <p className="text-slate-400 text-sm mt-1">
-              Official WCE Sangli documents, syllabus, circulars & more
+              Official WCE Sangli documents, syllabus, circulars & curated StudyMate resources
               {lastScraped && <span className="ml-2 text-emerald-500">· Last scraped: {new Date(lastScraped).toLocaleDateString()}</span>}
             </p>
           </div>

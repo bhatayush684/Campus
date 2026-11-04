@@ -18,6 +18,7 @@
 | Browser route validation | PASS | Chromium installed; live checks confirmed populated timetable grid and exam schedule cards |
 | Timetable failure/empty states | PASS | API failure and no-match states now provide recovery guidance |
 | Exam schedule filter recovery | PASS | Search/category/branch empty state now includes a reset action |
+| StudyMate resource catalog | PASS | Public notes, subject links, PYQ index, and CogniMate link added to Downloads |
 
 ## Environment
 
@@ -40,3 +41,6 @@
   route-split in a future performance pass.
 - The bundled exam schedule records are historical reference data. No upcoming
   date is presented as current until a verified source provides one.
+- StudyMate resources are public external links captured from its notes catalog;
+  the linked documents remain hosted by StudyMate or Google Drive and are not
+  copied into this repository.

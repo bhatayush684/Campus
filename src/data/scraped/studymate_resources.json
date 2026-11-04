@@ -1,0 +1,182 @@
+[
+  {
+    "id": "studymate-home",
+    "title": "StudyMate public notes library",
+    "url": "https://studymate-2xga.onrender.com/notes",
+    "type": "LINK",
+    "category": "Study Notes",
+    "department": "General",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-pyqs",
+    "title": "StudyMate previous year questions",
+    "url": "https://studymate-2xga.onrender.com/pyqs",
+    "type": "LINK",
+    "category": "Examination",
+    "department": "General",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-cognimate",
+    "title": "StudyMate CogniMate WCE knowledge assistant",
+    "url": "https://studymate-2xga.onrender.com/cognimate",
+    "type": "LINK",
+    "category": "Academic",
+    "department": "General",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-electrical-dc",
+    "title": "Basic Electrical — DC Circuits",
+    "url": "https://drive.google.com/file/d/1iXz1_XvWO_BSDhGyHeXPsCg_d6Fh0odk/view",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "Electrical",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-electrical-ac",
+    "title": "Basic Electrical — AC Circuits (Module 2)",
+    "url": "https://drive.google.com/file/d/1JfIPf-8xqZEsgXgDlPnPAxdp7wW575Ge/view?usp=sharing",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "Electrical",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-electrical-machines",
+    "title": "Basic Electrical — DC Machines (Module 3)",
+    "url": "https://drive.google.com/file/d/1JfJimmsOfxfdmpDobD5O494eMPj7F5Ks/view?usp=sharing",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "Electrical",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-electrical-transformers",
+    "title": "Basic Electrical — Transformers (Module 4)",
+    "url": "https://drive.google.com/file/d/1Jg0pNt9u-7x2BdBdO7B189lyqv4jjomh/view?usp=sharing",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "Electrical",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-electronics-digital",
+    "title": "Basic Electronics — Fundamentals of Digital Electronics",
+    "url": "https://drive.google.com/file/d/1ieST1i79B0pZ4WrTe5H7zXs6SqO5EYda/view",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "ENTC",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-mathematics-multivariable",
+    "title": "Mathematics 2 — Multivariable Calculus",
+    "url": "https://drive.google.com/file/d/1IpW0zrl2TjDZsXujqGrPXuSRG77zNJgU/view?usp=drive_link",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "General",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-mathematics-gamma-beta",
+    "title": "Mathematics 2 — Gamma and Beta Functions",
+    "url": "https://drive.google.com/file/d/1Rem0ERyEpUSRfDpZct9-EZjgKXX3wL0u/view?usp=drive_link",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "General",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-mathematics-curve",
+    "title": "Mathematics 2 — Curve Tracing",
+    "url": "https://drive.google.com/file/d/1kSaKY-AHEB0xFpAEmRvuDAM30bc0s2ue/view?usp=sharing",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "General",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-mathematics-lde",
+    "title": "Mathematics 2 — Linear Differential Equations",
+    "url": "https://drive.google.com/file/d/1KCkCn3am8DVivuFrK_jdd_-JdjARw1Lo/view",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "General",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-physics-wave-optics",
+    "title": "Physics — Wave Optics (Module 1)",
+    "url": "https://drive.google.com/file/d/1PwFe_s70Ucf2d_hmBtNVhkBZZX5Qeq0C/view?usp=sharing",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "General",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-physics-modern",
+    "title": "Physics — Modern Physics (Module 2)",
+    "url": "https://drive.google.com/file/d/1crWuRUH33LPW9N8VVI-3eSOvNisENBHR/view?usp=sharing",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "General",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-physics-ultrasonics",
+    "title": "Physics — Ultrasonics (Module 3)",
+    "url": "https://drive.google.com/file/d/1EfqghY-FeoDQvDH_nm_Sm6vARgW51Rzh/view?usp=sharing",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "General",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-chemistry-analysis",
+    "title": "Chemistry — Chemical Analysis (Module 1)",
+    "url": "https://drive.google.com/file/d/1VL2M6V_jMBXOUp6q7ERwUy7pBqA_L2Pu/view",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "General",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-chemistry-water",
+    "title": "Chemistry — Water Chemistry (Module 2)",
+    "url": "https://drive.google.com/file/d/1gbZkL1FcWQDfXG69wQ5JYZ4JVTguTjl_/view?usp=sharing",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "General",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-chemistry-corrosion",
+    "title": "Chemistry — Corrosion Science (Module 4)",
+    "url": "https://drive.google.com/file/d/1ZoCe8wInrjWQRtcgjkBOjW4lMFXyYWYF/view?usp=sharing",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "General",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-computer-fundamentals",
+    "title": "Computer Fundamentals — Basics, Hardware, Storage and AI",
+    "url": "https://studymate-2xga.onrender.com/subjects/computer_fundamentals",
+    "type": "LINK",
+    "category": "Study Notes",
+    "department": "General",
+    "source": "StudyMate"
+  },
+  {
+    "id": "studymate-engineering-mechanics",
+    "title": "Engineering Mechanics — Kinematics of Particles",
+    "url": "https://drive.google.com/file/d/1-7Og9qQQMx3JxNyU35T7muJq2Jb9nxAk/view?usp=sharing",
+    "type": "PDF",
+    "category": "Study Notes",
+    "department": "Mechanical",
+    "source": "StudyMate"
+  }
+]
