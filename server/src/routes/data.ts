@@ -1,8 +1,34 @@
 import express from 'express';
-import { dataService } from '../services/data.service.js';
+import { dataService, ProcessedData } from '../services/data.service.js';
 import { scraperService } from '../services/scraper.service.js';
 
 const router = express.Router();
+const CACHE_TTL_MS = 10 * 60 * 1000;
+let cachedData: ProcessedData | null = null;
+let cacheExpiresAt = 0;
+let refreshPromise: Promise<ProcessedData> | null = null;
+
+async function getProcessedData(): Promise<ProcessedData> {
+  if (cachedData && cacheExpiresAt > Date.now()) return cachedData;
+  if (refreshPromise) return refreshPromise;
+
+  refreshPromise = scraperService.scrapeWalchandCollege()
+    .then(scrapedData => {
+      const processed = dataService.processData(scrapedData);
+      cachedData = processed;
+      cacheExpiresAt = Date.now() + CACHE_TTL_MS;
+      return processed;
+    })
+    .finally(() => {
+      refreshPromise = null;
+    });
+
+  if (cachedData) {
+    refreshPromise.catch(error => console.error('Background scrape refresh failed:', error));
+    return cachedData;
+  }
+  return refreshPromise;
+}
 
 /**
  * GET /api/data/notices
@@ -10,10 +36,7 @@ const router = express.Router();
  */
 router.get('/notices', async (req, res) => {
   try {
-    // In production, this would fetch from database
-    // For now, scrape and process
-    const scrapedData = await scraperService.scrapeWalchandCollege();
-    const processed = dataService.processData(scrapedData);
+    const processed = await getProcessedData();
     res.json({ success: true, data: processed.notices });
   } catch (error: any) {
     res.status(500).json({ 
@@ -29,8 +52,7 @@ router.get('/notices', async (req, res) => {
  */
 router.get('/timetables', async (req, res) => {
   try {
-    const scrapedData = await scraperService.scrapeWalchandCollege();
-    const processed = dataService.processData(scrapedData);
+    const processed = await getProcessedData();
     res.json({ success: true, data: processed.timetables });
   } catch (error: any) {
     res.status(500).json({ 
@@ -46,8 +68,7 @@ router.get('/timetables', async (req, res) => {
  */
 router.get('/faculty', async (req, res) => {
   try {
-    const scrapedData = await scraperService.scrapeWalchandCollege();
-    const processed = dataService.processData(scrapedData);
+    const processed = await getProcessedData();
     res.json({ success: true, data: processed.faculty });
   } catch (error: any) {
     res.status(500).json({ 
@@ -63,8 +84,7 @@ router.get('/faculty', async (req, res) => {
  */
 router.get('/departments', async (req, res) => {
   try {
-    const scrapedData = await scraperService.scrapeWalchandCollege();
-    const processed = dataService.processData(scrapedData);
+    const processed = await getProcessedData();
     res.json({ success: true, data: processed.departments });
   } catch (error: any) {
     res.status(500).json({ 

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { useChatStore } from '../store/chatStore';
-import { apiGetConversations, apiGetNotices } from '../services/api';
-import { mockTimetable } from '../mock/timetable';
+import { apiGetConversations, apiGetDocuments, apiGetNotices, apiGetTimetable } from '../services/api';
+import { TimetableEntry, KnowledgeDocument } from '../types';
 import { motion } from 'framer-motion';
 import { MessageSquare, Calendar, Bell, FileText, TrendingUp, BookOpen, Users, BarChart3, Upload, ArrowRight, Plus, Download, Sparkles, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -43,6 +43,8 @@ export default function Dashboard() {
   const { user } = useAuthStore();
   const { conversations, setConversations } = useChatStore();
   const [notices, setNotices] = useState<any[]>([]);
+  const [todayClasses, setTodayClasses] = useState<TimetableEntry[]>([]);
+  const [documentCount, setDocumentCount] = useState(0);
 
   const today = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const dayName = new Date().toLocaleDateString('en-IN', { weekday: 'long' }) as any;
@@ -50,18 +52,18 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
     Promise.all([
-      apiGetConversations(user.id).then(convos => {
-        setConversations(convos);
-      }),
-      apiGetNotices().then(data => {
-        setNotices(data.slice(0, 5));
-      })
-    ]);
+      apiGetConversations(user.id).then(setConversations),
+      apiGetNotices().then(data => setNotices(data.slice(0, 5))),
+      apiGetTimetable(user.role === 'student'
+        ? { department: user.department, year: user.year, division: user.division }
+        : { department: user.department })
+        .then(data => setTodayClasses(data.filter(item => item.day === dayName))),
+      apiGetDocuments().then((docs: KnowledgeDocument[]) => setDocumentCount(docs.length)),
+    ]).catch(() => {
+      setTodayClasses([]);
+      setDocumentCount(0);
+    });
   }, [user]);
-
-  const todayClasses = mockTimetable.filter(t =>
-    user && t.department === user.department && t.year === user.year && t.division === user.division && t.day === dayName
-  );
 
   const recentChats = conversations.slice(0, 4);
   const pinnedNotices = notices.filter(n => n.isPinned);
@@ -96,7 +98,7 @@ export default function Dashboard() {
             <StatCard icon={MessageSquare} label="Total Chats" value={conversations.length} trend="+2 today" color="bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400" delay={0} />
             <StatCard icon={Calendar} label="Classes Today" value={todayClasses.length} color="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" delay={0.1} />
             <StatCard icon={Bell} label="Pinned Notices" value={pinnedNotices.length} color="bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400" delay={0.2} />
-            <StatCard icon={BookOpen} label="Documents" value={267} color="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400" delay={0.3} />
+            <StatCard icon={BookOpen} label="Documents" value={documentCount} color="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400" delay={0.3} />
           </div>
 
           <div className="grid lg:grid-cols-3 gap-6">
@@ -303,10 +305,10 @@ export default function Dashboard() {
                 My Lectures Today
               </h2>
               <div className="space-y-3">
-                {mockTimetable.filter(t => {
+                {todayClasses.filter(t => {
                   const name = (user?.name ?? '').toLowerCase();
                   const last = name.split(' ').pop() ?? '';
-                  return t.faculty.toLowerCase().includes(last) || t.faculty.toLowerCase().includes('suresh') || t.faculty.toLowerCase().includes('meena');
+                  return t.faculty.toLowerCase().includes(last);
                 }).slice(0, 4).map((cls, i) => (
                   <motion.div
                     key={cls.id}

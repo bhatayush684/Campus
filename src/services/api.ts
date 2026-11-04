@@ -1,7 +1,7 @@
 /**
- * api.ts — All fake API calls with 400–1200ms delay.
- * To connect a real backend, replace each function body with a real fetch/axios call.
- * See README.md for the endpoint mapping table.
+ * api.ts — Frontend data access layer.
+ * Static scraped datasets provide an offline-safe fallback while the deployed
+ * backend handles AI requests and future persistence.
  */
 
 import { User, Conversation, Message, TimetableEntry, Notice, KnowledgeDocument, AnalyticsData, EvalMetric, RAGSettings, ScrapedSyllabus, ScrapedExamSchedule, StudyPlan, GeneratedNotes } from '../types';
@@ -291,7 +291,12 @@ export async function apiGetSyllabus(filters?: { department?: string }): Promise
  */
 export async function apiGetExamSchedules(): Promise<ScrapedExamSchedule[]> {
   await delay(rand(400, 700));
-  return scrapedExamSchedules;
+  return [...(scrapedExamSchedules as ScrapedExamSchedule[])].sort((a, b) => {
+    const first = Date.parse(a.date);
+    const second = Date.parse(b.date);
+    return (Number.isFinite(first) ? first : Number.MAX_SAFE_INTEGER)
+      - (Number.isFinite(second) ? second : Number.MAX_SAFE_INTEGER);
+  });
 }
 
 /**
@@ -356,7 +361,7 @@ export async function apiGenerateStudyPlan(userId: string, department: string, e
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  (plan as StudyPlan & { metadata?: unknown }).metadata = {
+  plan.metadata = {
     daysAvailable,
     checkedOn: today().toISOString().slice(0, 10),
     officialExamReference: officialExam ? {

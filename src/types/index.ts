@@ -287,6 +287,16 @@ export interface StudyPlan {
   examDate: string;
   createdAt: string;
   updatedAt: string;
+  metadata?: {
+    daysAvailable: number;
+    checkedOn: string;
+    officialExamReference: {
+      date: string;
+      subject?: string;
+      source?: string;
+    } | null;
+    note: string;
+  };
 }
 
 export interface GeneratedNotes {

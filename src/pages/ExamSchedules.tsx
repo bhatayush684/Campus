@@ -47,7 +47,9 @@ export default function ExamSchedules() {
     return matchSearch && matchType && matchDept;
   });
 
-  const nextExam = exams[0];
+  const nextExam = exams
+    .filter(exam => Number.isFinite(Date.parse(exam.date)) && new Date(exam.date) >= new Date(new Date().toISOString().slice(0, 10)))
+    .sort((a, b) => Date.parse(a.date) - Date.parse(b.date))[0];
 
   const handlePrintHallTicket = () => {
     window.print();
@@ -60,7 +62,7 @@ export default function ExamSchedules() {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mb-2">
             <ShieldCheck className="w-3.5 h-3.5" />
-            WCE Autonomous Examination Cell (Winter 2024)
+            WCE Autonomous Examination Cell · Reference data
           </div>
           <h1 className="text-3xl font-extrabold text-white flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
@@ -83,7 +85,7 @@ export default function ExamSchedules() {
       </div>
 
       {/* Countdown Card */}
-      {nextExam && (
+      {nextExam ? (
         <div className="glass-card p-6 border-blue-500/30 bg-gradient-to-r from-blue-950/40 via-slate-900 to-indigo-950/40 relative overflow-hidden">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
@@ -102,6 +104,16 @@ export default function ExamSchedules() {
                 Winter Session
               </span>
             </div>
+          </div>
+        </div>
+      ) : !loading && (
+        <div className="glass-card p-5 border-amber-500/30 bg-amber-950/20 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
+          <div>
+            <p className="font-semibold text-amber-200">No future exam date is currently verified</p>
+            <p className="text-sm text-amber-100/70 mt-1">
+              The available timetable records are older than today. Check the official examination-cell notice before planning around a date.
+            </p>
           </div>
         </div>
       )}
