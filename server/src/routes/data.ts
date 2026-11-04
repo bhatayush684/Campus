@@ -4,6 +4,7 @@ import { scraperService } from '../services/scraper.service.js';
 
 const router = express.Router();
 const CACHE_TTL_MS = 10 * 60 * 1000;
+const SCRAPE_TIMEOUT_MS = 8 * 1000;
 let cachedData: ProcessedData | null = null;
 let cacheExpiresAt = 0;
 let refreshPromise: Promise<ProcessedData> | null = null;
@@ -12,12 +13,21 @@ async function getProcessedData(): Promise<ProcessedData> {
   if (cachedData && cacheExpiresAt > Date.now()) return cachedData;
   if (refreshPromise) return refreshPromise;
 
-  refreshPromise = scraperService.scrapeWalchandCollege()
+  refreshPromise = Promise.race([
+    scraperService.scrapeWalchandCollege(),
+    new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error(`Scrape exceeded ${SCRAPE_TIMEOUT_MS}ms`)), SCRAPE_TIMEOUT_MS);
+    }),
+  ])
     .then(scrapedData => {
       const processed = dataService.processData(scrapedData);
       cachedData = processed;
       cacheExpiresAt = Date.now() + CACHE_TTL_MS;
       return processed;
+    })
+    .catch(error => {
+      console.error('Scraped data refresh failed:', error);
+      return dataService.processData([]);
     })
     .finally(() => {
       refreshPromise = null;
