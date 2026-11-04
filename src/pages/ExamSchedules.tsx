@@ -51,6 +51,12 @@ export default function ExamSchedules() {
     .filter(exam => Number.isFinite(Date.parse(exam.date)) && new Date(exam.date) >= new Date(new Date().toISOString().slice(0, 10)))
     .sort((a, b) => Date.parse(a.date) - Date.parse(b.date))[0];
 
+  const resetFilters = () => {
+    setSearch('');
+    setType('All');
+    setDepartment('All');
+  };
+
   const handlePrintHallTicket = () => {
     window.print();
   };
@@ -110,9 +116,9 @@ export default function ExamSchedules() {
         <div className="glass-card p-5 border-amber-500/30 bg-amber-950/20 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
           <div>
-            <p className="font-semibold text-amber-200">No future exam date is currently verified</p>
+            <p className="font-semibold text-amber-200">No upcoming date is currently verified</p>
             <p className="text-sm text-amber-100/70 mt-1">
-              The available timetable records are older than today. Check the official examination-cell notice before planning around a date.
+              The {exams.length} reference schedule{exams.length === 1 ? '' : 's'} below are retained for planning. Check the official examination-cell notice before relying on any date.
             </p>
           </div>
         </div>
@@ -166,7 +172,10 @@ export default function ExamSchedules() {
         <div className="glass-card p-12 text-center text-slate-400">
           <Calendar className="w-12 h-12 mx-auto mb-3 opacity-30 text-blue-400" />
           <p className="text-lg font-semibold text-white">No exam slots found</p>
-          <p className="text-sm mt-1">Try resetting the branch or category filters</p>
+          <p className="text-sm mt-1">Try resetting the branch, category, or search filters</p>
+          <button onClick={resetFilters} className="btn-secondary mt-4 text-sm">
+            Reset filters
+          </button>
         </div>
       ) : (
         <div className="space-y-3">

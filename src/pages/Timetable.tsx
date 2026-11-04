@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Download, Printer, Calendar } from 'lucide-react';
+import { Download, Printer, Calendar, AlertCircle } from 'lucide-react';
 import { apiGetTimetable } from '../services/api';
 import { TimetableEntry, Department, Year, Division } from '../types';
 import { cn, generateICS } from '../lib/utils';
@@ -23,6 +23,7 @@ const TYPE_BADGE: Record<string, string> = {
 export default function Timetable() {
   const [entries, setEntries] = useState<TimetableEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [view, setView] = useState<'week' | 'day'>('week');
   const [selectedDay, setSelectedDay] = useState<typeof DAYS[number]>('Monday');
   const [filters, setFilters] = useState({
@@ -34,8 +35,13 @@ export default function Timetable() {
 
   useEffect(() => {
     setLoading(true);
+    setLoadError(null);
     apiGetTimetable(filters).then(data => {
       setEntries(data);
+      setLoading(false);
+    }).catch(() => {
+      setEntries([]);
+      setLoadError('The timetable could not be loaded. Please try again.');
       setLoading(false);
     });
   }, [filters]);
@@ -145,6 +151,20 @@ export default function Timetable() {
           {Array(21).fill(0).map((_, i) => (
             <div key={i} className="h-20 bg-slate-100 dark:bg-slate-800 rounded-xl animate-pulse" />
           ))}
+        </div>
+      ) : loadError ? (
+        <div className="card p-12 text-center text-slate-500 dark:text-slate-400">
+          <AlertCircle className="w-10 h-10 mx-auto mb-3 text-amber-500" />
+          <p className="font-semibold text-slate-800 dark:text-white">{loadError}</p>
+          <button onClick={() => setFilters(current => ({ ...current }))} className="btn-secondary mt-4 text-sm">
+            Try again
+          </button>
+        </div>
+      ) : entries.length === 0 ? (
+        <div className="card p-12 text-center text-slate-500 dark:text-slate-400">
+          <Calendar className="w-10 h-10 mx-auto mb-3 opacity-40" />
+          <p className="font-semibold text-slate-800 dark:text-white">No classes match these filters</p>
+          <p className="text-sm mt-1">Choose “All” or broaden the faculty search to see more classes.</p>
         </div>
       ) : view === 'week' ? (
         /* Weekly Grid */
