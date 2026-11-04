@@ -381,3 +381,6 @@ Do not commit `node_modules`, `dist`, `.env`, API keys, or generated secrets.
 - Preserve source citations and date warnings in grounded answers.
 - Run frontend and backend builds before pushing.
 - Keep changes focused and update this README when deployment behavior changes.
+
+  ## contributer name and prn
+- Ganesh Pralhad Bhutte  245109112
