@@ -1,0 +1,65 @@
+import { AnalyticsData, EvalMetric } from '../types';
+
+export const mockAnalytics: AnalyticsData = {
+  queriesPerDay: [
+    { date: 'Oct 14', queries: 45, answered: 42 },
+    { date: 'Oct 15', queries: 67, answered: 61 },
+    { date: 'Oct 16', queries: 89, answered: 82 },
+    { date: 'Oct 17', queries: 120, answered: 108 },
+    { date: 'Oct 18', queries: 95, answered: 88 },
+    { date: 'Oct 19', queries: 34, answered: 31 },
+    { date: 'Oct 20', queries: 28, answered: 26 },
+    { date: 'Oct 21', queries: 142, answered: 130 },
+    { date: 'Oct 22', queries: 76, answered: 70 },
+  ],
+  topQuestions: [
+    { question: 'What is today\'s TY CSE timetable?', count: 89 },
+    { question: 'When is the exam schedule?', count: 76 },
+    { question: 'Who is the HOD of CSE?', count: 64 },
+    { question: 'What are hostel rules?', count: 58 },
+    { question: 'How to apply for scholarship?', count: 52 },
+    { question: 'What is the fee structure?', count: 47 },
+    { question: 'When is Technova 2024?', count: 43 },
+    { question: 'Library timings?', count: 38 },
+  ],
+  feedbackRatio: [
+    { date: 'Oct 14', positive: 38, negative: 4 },
+    { date: 'Oct 15', positive: 55, negative: 6 },
+    { date: 'Oct 16', positive: 74, negative: 8 },
+    { date: 'Oct 17', positive: 98, negative: 10 },
+    { date: 'Oct 18', positive: 81, negative: 7 },
+    { date: 'Oct 19', positive: 28, negative: 3 },
+    { date: 'Oct 20', positive: 22, negative: 4 },
+    { date: 'Oct 21', positive: 118, negative: 12 },
+    { date: 'Oct 22', positive: 64, negative: 6 },
+  ],
+  avgResponseTime: [
+    { date: 'Oct 14', time: 1.2 },
+    { date: 'Oct 15', time: 1.4 },
+    { date: 'Oct 16', time: 1.1 },
+    { date: 'Oct 17', time: 1.8 },
+    { date: 'Oct 18', time: 1.3 },
+    { date: 'Oct 19', time: 0.9 },
+    { date: 'Oct 20', time: 1.0 },
+    { date: 'Oct 21', time: 2.1 },
+    { date: 'Oct 22', time: 1.5 },
+  ],
+  unansweredQueries: [
+    { id: 'uq1', query: 'What is the procedure for TC/LC?', timestamp: '2024-10-22T10:30:00Z', department: 'Admin' },
+    { id: 'uq2', query: 'Are there any PhD programs at WCE?', timestamp: '2024-10-22T09:15:00Z', department: 'Admin' },
+    { id: 'uq3', query: 'What is the attendance requirement for lab?', timestamp: '2024-10-21T16:45:00Z', department: 'CSE' },
+    { id: 'uq4', query: 'Can I change my elective after registration?', timestamp: '2024-10-21T14:20:00Z', department: 'CSE' },
+    { id: 'uq5', query: 'Winter vacation dates 2024?', timestamp: '2024-10-21T11:00:00Z', department: 'Admin' },
+  ],
+};
+
+export const mockEvalMetrics: EvalMetric[] = [
+  { id: 'em1', question: 'What is today\'s TY CSE timetable?', answer: 'The TY CSE (Div A) timetable for Monday includes Machine Learning at 9 AM...', faithfulness: 0.92, answerRelevancy: 0.95, contextPrecision: 0.88, contextRecall: 0.91, timestamp: '2024-10-22T09:00:00Z' },
+  { id: 'em2', question: 'Who is the HOD of CSE department?', answer: 'The Head of Department of Computer Science and Engineering at WCE Sangli is Dr. Suresh Jadhav.', faithfulness: 0.98, answerRelevancy: 0.97, contextPrecision: 0.94, contextRecall: 0.96, timestamp: '2024-10-22T09:05:00Z' },
+  { id: 'em3', question: 'When is the end semester exam?', answer: 'The End Semester Examination starts from November 18, 2024 for all branches.', faithfulness: 0.96, answerRelevancy: 0.98, contextPrecision: 0.92, contextRecall: 0.94, timestamp: '2024-10-22T09:10:00Z' },
+  { id: 'em4', question: 'What are hostel mess timings?', answer: 'Breakfast: 7-8:30 AM, Lunch: 12-2 PM, Snacks: 5:30-6:30 PM, Dinner: 7:30-9:30 PM', faithfulness: 0.94, answerRelevancy: 0.93, contextPrecision: 0.89, contextRecall: 0.90, timestamp: '2024-10-22T09:15:00Z' },
+  { id: 'em5', question: 'How to apply for scholarship?', answer: 'Applications for state government scholarships are open until November 15, 2024...', faithfulness: 0.88, answerRelevancy: 0.90, contextPrecision: 0.85, contextRecall: 0.87, timestamp: '2024-10-22T09:20:00Z' },
+  { id: 'em6', question: 'What subjects are in TY CSE semester 5?', answer: 'TY CSE Semester 5 includes: Machine Learning, Computer Networks, Database Management...', faithfulness: 0.95, answerRelevancy: 0.94, contextPrecision: 0.91, contextRecall: 0.93, timestamp: '2024-10-22T09:25:00Z' },
+  { id: 'em7', question: 'What is the fee structure for BE?', answer: 'The fee structure for BE is available in the administrative documents. The annual fee includes...', faithfulness: 0.82, answerRelevancy: 0.85, contextPrecision: 0.80, contextRecall: 0.83, timestamp: '2024-10-22T09:30:00Z' },
+  { id: 'em8', question: 'What is anti-ragging policy?', answer: 'WCE has a zero-tolerance policy against ragging. Complaints can be filed at antiragging.wce.ac.in...', faithfulness: 0.97, answerRelevancy: 0.96, contextPrecision: 0.93, contextRecall: 0.95, timestamp: '2024-10-22T09:35:00Z' },
+];

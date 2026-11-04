@@ -1,0 +1,23 @@
+================================================================================
+WALCHAND COLLEGE OF ENGINEERING, SANGLI
+COURSE CODE: 4CS303 | COMPUTER NETWORKS (FORMULA & CONCEPTS SHEET)
+================================================================================
+
+1. PERFORMANCE FORMULAS
+- Transmission Delay: T_tx = L / B (Packet Length / Bandwidth)
+- Propagation Delay: T_prop = d / v (Distance / Propagation Speed ~ 2 * 10^8 m/s in copper/fiber)
+- Bandwidth-Delay Product (BDP): BDP = Bandwidth * Round Trip Time (RTT). Represents capacity of link.
+
+2. IP ADDRESSING & CIDR
+- Subnet Mask /24 = 255.255.255.0 (256 IP addresses, 254 usable hosts)
+- Subnet Mask /26 = 255.255.255.192 (64 IP addresses, 62 usable hosts)
+- Private IP Ranges (RFC 1918):
+  * 10.0.0.0/8 (10.0.0.0 - 10.255.255.255)
+  * 172.16.0.0/12 (172.16.0.0 - 172.31.255.255)
+  * 192.168.0.0/16 (192.168.0.0 - 192.168.255.255)
+
+3. TCP CONGESTION CONTROL PHASES
+1. Slow Start: CWND starts at 1 MSS, doubles every RTT (exponential growth: 1, 2, 4, 8...).
+2. Congestion Avoidance: Triggered when CWND reaches ssthresh (Slow Start Threshold). Increases by 1 MSS per RTT (linear growth).
+3. Fast Retransmit: Triggered by 3 duplicate ACKs (Triple Duplicate ACK) without waiting for RTO timeout.
+4. Fast Recovery: ssthresh set to CWND / 2, CWND set to ssthresh + 3 MSS.

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "CSE",
+    "name": "Computer Science & Engineering",
+    "url": "https://walchandsangli.ac.in/department-of-computer-engineering/overview/",
+    "hod": "Dr. Suresh S. Patil",
+    "intake": "UG: 120, PG: 18, Ph.D: 10",
+    "established": 1986,
+    "accreditation": "NBA Accredited for 6 Years",
+    "overview": "Pioneering excellence in computing education, systems software, and artificial intelligence with NVIDIA GPU clusters and state-of-the-art research labs."
+  },
+  {
+    "id": "IT",
+    "name": "Information Technology",
+    "url": "https://walchandsangli.ac.in/department-of-information-technology/overview-it/",
+    "hod": "Dr. S. N. Gujar",
+    "intake": "UG: 60, PG: 18",
+    "established": 2001,
+    "accreditation": "NBA Accredited",
+    "overview": "Focuses on enterprise cloud systems, cybersecurity, full-stack software development, and modern information processing."
+  },
+  {
+    "id": "ENTC",
+    "name": "Electronics & Telecommunication",
+    "url": "https://walchandsangli.ac.in/department-of-electronics-engg/overview-electronics/",
+    "hod": "Dr. S. R. Khot",
+    "intake": "UG: 60, PG: 18",
+    "established": 1986,
+    "accreditation": "NBA Accredited",
+    "overview": "Leading center for VLSI design, embedded microcontrollers, 5G signal processing, and antenna measurements."
+  },
+  {
+    "id": "Civil",
+    "name": "Civil Engineering",
+    "url": "https://walchandsangli.ac.in/department-of-civil-engineering/overview-ce/",
+    "hod": "Dr. V. J. Kadam",
+    "intake": "UG: 60, PG: 36",
+    "established": 1947,
+    "accreditation": "NBA Accredited",
+    "overview": "The founding department of Walchand College of Engineering, renowned nationwide for structural consultancy, geotechnical testing, and environmental engineering."
+  },
+  {
+    "id": "Mechanical",
+    "name": "Mechanical Engineering",
+    "url": "https://walchandsangli.ac.in/department-of-mechanical-engineering/overview/",
+    "hod": "Dr. S. S. Barve",
+    "intake": "UG: 60, PG: 36",
+    "established": 1955,
+    "accreditation": "NBA Accredited",
+    "overview": "Equipped with robotics manufacturing, CNC machining, advanced thermal power laboratories, and electric vehicle testing rigs."
+  },
+  {
+    "id": "Electrical",
+    "name": "Electrical Engineering",
+    "url": "https://walchandsangli.ac.in/department-of-electrical-engg/overview-electrical/",
+    "hod": "Dr. S. R. Jagtap",
+    "intake": "UG: 60, PG: 18",
+    "established": 1955,
+    "accreditation": "NBA Accredited",
+    "overview": "Specializes in smart grid technology, high voltage engineering, electrical machine drives, and renewable power systems."
+  },
+  {
+    "id": "AI/ML",
+    "name": "Artificial Intelligence & Machine Learning",
+    "url": "https://walchandsangli.ac.in/department-of-artificial-intelligence-and-machine-learning/overview-ai/",
+    "hod": "Dr. M. S. Sardesai",
+    "intake": "UG: 60",
+    "established": 2021,
+    "accreditation": "Autonomous Program",
+    "overview": "Dedicated to machine learning foundations, large language models, autonomous vision systems, and data-driven computational engineering."
+  },
+  {
+    "id": "Robotics",
+    "name": "Robotics & Automation",
+    "url": "https://walchandsangli.ac.in/department-of-robotics-and-automation/overview-ra/",
+    "hod": "Dr. A. A. Joshi",
+    "intake": "UG: 60",
+    "established": 2021,
+    "accreditation": "Autonomous Program",
+    "overview": "Interdisciplinary engineering synthesizing kinematics, ROS 2 software, machine perception, and mechatronic design."
+  }
+]

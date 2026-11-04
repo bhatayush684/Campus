@@ -1,0 +1,182 @@
+[
+  {
+    "id": "doc-cse-301",
+    "title": "4CS301 Machine Learning Syllabus & Study Scheme",
+    "url": "https://walchandsangli.ac.in/department-of-computer-engineering/b-tech-curriculum/",
+    "downloadUrl": "/downloads/notes-machine-learning-complete.txt",
+    "type": "PDF",
+    "category": "Syllabus",
+    "department": "CSE",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-cse-302",
+    "title": "4CS302 Database Management Systems (DBMS) Syllabus & Study Scheme",
+    "url": "https://walchandsangli.ac.in/department-of-computer-engineering/b-tech-curriculum/",
+    "downloadUrl": "/downloads/notes-dbms-sql-complete.txt",
+    "type": "PDF",
+    "category": "Syllabus",
+    "department": "CSE",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-cse-303",
+    "title": "4CS303 Computer Networks Syllabus & Study Scheme",
+    "url": "https://walchandsangli.ac.in/department-of-computer-engineering/b-tech-curriculum/",
+    "downloadUrl": "/downloads/notes-computer-networks-complete.txt",
+    "type": "PDF",
+    "category": "Syllabus",
+    "department": "CSE",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-cse-304",
+    "title": "4CS304 Operating Systems Syllabus & Study Scheme",
+    "url": "https://walchandsangli.ac.in/department-of-computer-engineering/b-tech-curriculum/",
+    "downloadUrl": "/downloads/notes-operating-systems-complete.txt",
+    "type": "PDF",
+    "category": "Syllabus",
+    "department": "CSE",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-cse-201",
+    "title": "4CS201 Data Structures & Algorithms Syllabus & Study Scheme",
+    "url": "https://walchandsangli.ac.in/department-of-computer-engineering/b-tech-curriculum/",
+    "downloadUrl": "/downloads/notes-data-structures-algorithms.txt",
+    "type": "PDF",
+    "category": "Syllabus",
+    "department": "CSE",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-it-301",
+    "title": "4IT301 Web Technologies & Cloud Computing Syllabus & Study Scheme",
+    "url": "https://walchandsangli.ac.in/department-of-information-technology/b-tech-curriculum-with-minors-it/",
+    "downloadUrl": "/downloads/notes-machine-learning-complete.txt",
+    "type": "PDF",
+    "category": "Syllabus",
+    "department": "IT",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-entc-301",
+    "title": "4ET301 Digital Signal Processing (DSP) Syllabus & Study Scheme",
+    "url": "https://walchandsangli.ac.in/department-of-electronics-engg/b-tech-electronics-engineering-curriculum-electronics/",
+    "downloadUrl": "/downloads/notes-data-structures-algorithms.txt",
+    "type": "PDF",
+    "category": "Syllabus",
+    "department": "ENTC",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-cv-301",
+    "title": "4CV301 Structural Analysis & Design Syllabus & Study Scheme",
+    "url": "https://walchandsangli.ac.in/department-of-civil-engineering/b-tech-curriculum-with-minors-ce/",
+    "downloadUrl": "/downloads/notes-data-structures-algorithms.txt",
+    "type": "PDF",
+    "category": "Syllabus",
+    "department": "Civil",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-me-301",
+    "title": "4ME301 Applied Thermodynamics & Heat Transfer Syllabus & Study Scheme",
+    "url": "https://walchandsangli.ac.in/department-of-mechanical-engineering/overview/",
+    "downloadUrl": "/downloads/notes-data-structures-algorithms.txt",
+    "type": "PDF",
+    "category": "Syllabus",
+    "department": "Mechanical",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-el-301",
+    "title": "4EL301 Control Systems Engineering Syllabus & Study Scheme",
+    "url": "https://walchandsangli.ac.in/department-of-electrical-engg/overview-electrical/",
+    "downloadUrl": "/downloads/notes-data-structures-algorithms.txt",
+    "type": "PDF",
+    "category": "Syllabus",
+    "department": "Electrical",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-aiml-301",
+    "title": "4AI301 Deep Learning & Computer Vision Syllabus & Study Scheme",
+    "url": "https://walchandsangli.ac.in/department-of-artificial-intelligence-and-machine-learning/overview-ai/",
+    "downloadUrl": "/downloads/notes-machine-learning-complete.txt",
+    "type": "PDF",
+    "category": "Syllabus",
+    "department": "AI/ML",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-rob-301",
+    "title": "4RA301 Robotics Kinematics & Autonomous Navigation Syllabus & Study Scheme",
+    "url": "https://walchandsangli.ac.in/department-of-robotics-and-automation/overview-ra/",
+    "downloadUrl": "/downloads/notes-data-structures-algorithms.txt",
+    "type": "PDF",
+    "category": "Syllabus",
+    "department": "Robotics",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-cal-1",
+    "title": "Academic Calendar 2024-25 Odd & Even Semesters",
+    "url": "https://walchandsangli.ac.in/academics-programmes/calendars-and-schedules/",
+    "downloadUrl": "/downloads/wce-academic-calendar-2024-25.txt",
+    "type": "PDF",
+    "category": "Timetable",
+    "department": "General",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-reg-1",
+    "title": "WCE Autonomy Academic Rules & Credit System",
+    "url": "https://walchandsangli.ac.in/academics-programmes/credit-system-and-bank/",
+    "downloadUrl": "/downloads/wce-credit-system-regulations.txt",
+    "type": "PDF",
+    "category": "Academic",
+    "department": "General",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-hostel-1",
+    "title": "Hostel Handbook, Rules & Mess Regulations 2024",
+    "url": "https://walchandsangli.ac.in/campus-life/online-platforms/",
+    "downloadUrl": "/downloads/wce-hostel-rules-handbook.txt",
+    "type": "PDF",
+    "category": "Hostel",
+    "department": "General",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-nirf-1",
+    "title": "NIRF Engineering 2024 Submission Report",
+    "url": "https://walchandsangli.ac.in/about/nirf-submissions/",
+    "downloadUrl": "https://walchandsangli.ac.in/about/nirf-submissions/",
+    "type": "PDF",
+    "category": "Accreditation",
+    "department": "General",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-naac-1",
+    "title": "NAAC Self Study Report (SSR) Cycle 3",
+    "url": "https://walchandsangli.ac.in/about/iqac-reports/",
+    "downloadUrl": "https://walchandsangli.ac.in/about/iqac-reports/",
+    "type": "PDF",
+    "category": "Accreditation",
+    "department": "General",
+    "source": "https://walchandsangli.ac.in"
+  },
+  {
+    "id": "doc-fee-1",
+    "title": "Fee Structure approved by FRA for B.Tech & M.Tech 2024-25",
+    "url": "https://walchandsangli.ac.in/admissions/fees-as-per-authorities-dte-fra/",
+    "downloadUrl": "https://walchandsangli.ac.in/admissions/fees-as-per-authorities-dte-fra/",
+    "type": "PDF",
+    "category": "Fees",
+    "department": "General",
+    "source": "https://walchandsangli.ac.in"
+  }
+]

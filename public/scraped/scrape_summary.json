@@ -1,0 +1,14 @@
+{
+  "scrapedAt": "2026-11-02T18:54:04.266Z",
+  "status": "success",
+  "counts": {
+    "syllabus": 12,
+    "faculty": 23,
+    "examSchedules": 10,
+    "placements": 12,
+    "notices": 11,
+    "docs": 18,
+    "departments": 8,
+    "events": 4
+  }
+}

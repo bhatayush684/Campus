@@ -1,0 +1,140 @@
+[
+  {
+    "id": "not-1",
+    "title": "End Semester Examination (Winter 2024) - Final Schedule & Hall Ticket Issuance",
+    "content": "The End Semester Examinations for all UG (B.Tech FY, SY, TY, Final Year) and PG (M.Tech) will commence from 25th November 2024. Hall tickets with verified signatures are now available for download on the student portal (erp.wce.ac.in). Students must verify their exam centers, subject codes, and seating blocks. No student will be admitted without a valid College ID Card and physical printout of the Hall Ticket.",
+    "category": "Exam",
+    "date": "2024-11-02",
+    "isPinned": true,
+    "author": "Controller of Examinations (CoE)",
+    "attachments": [
+      "ESE_Winter_2024_Timetable.pdf",
+      "Hall_Ticket_Instructions.pdf"
+    ],
+    "url": "https://walchandsangli.ac.in/academics-programmes/calendars-and-schedules/"
+  },
+  {
+    "id": "not-2",
+    "title": "TCS Digital & Prime Recruitment Drive 2024-25 - Final Shortlist & Interview Schedule",
+    "content": "Training & Placement Office announces that TCS will conduct virtual interviews for Digital (7.5 LPA) and Prime (9.0 LPA) shortlisted students on 15th-16th November 2024. All 112 shortlisted students from CSE, IT, and ENTC are requested to dress in formal attire, test their webcams, and keep digital copies of their resumes, marksheets, and government photo ID ready. Meeting links have been dispatched to registered college emails.",
+    "category": "Placement",
+    "date": "2024-11-01",
+    "isPinned": true,
+    "author": "Prof. R. R. Deshmukh, TPO",
+    "attachments": [
+      "TCS_Shortlisted_Students_List.pdf",
+      "Virtual_Interview_Guidelines.pdf"
+    ],
+    "url": "https://walchandsangli.ac.in/communication/"
+  },
+  {
+    "id": "not-3",
+    "title": "Academic Calendar 2024-25 (Odd Semester) - Revision for Mid-Sem & Term End Dates",
+    "content": "In accordance with the Academic Council resolution, the last instructional day for the Autumn semester will be 12th November 2024. Practical/Oral examinations will take place from 14th to 22nd November 2024. Theory ESE begins on 25th November 2024. Winter vacation for students is scheduled from 21st December 2024 to 5th January 2025. The Even semester classes will begin on Monday, 6th January 2025.",
+    "category": "General",
+    "date": "2024-10-28",
+    "isPinned": true,
+    "author": "Dr. B. F. Momin, Dean Academics",
+    "attachments": [
+      "Revised_Academic_Calendar_2024-25.pdf"
+    ],
+    "url": "https://walchandsangli.ac.in/academics-programmes/calendars-and-schedules/"
+  },
+  {
+    "id": "not-4",
+    "title": "Hostel Mess Fee Payment & Room Re-allotment Notice for Even Semester",
+    "content": "All resident students of Hostels 1, 2, 3, 4, 5 and Girls Hostels A, B, C are hereby notified that the mess advance of Rs. 18,500/- and semester maintenance fee must be paid before 20th November 2024 through the online SBI Collect portal. Room transfers or vacating requests must be submitted to the Chief Warden office by 15th November.",
+    "category": "Hostel",
+    "date": "2024-10-25",
+    "isPinned": false,
+    "author": "Chief Hostel Warden, WCE",
+    "attachments": [
+      "Hostel_Fee_Structure_2024.pdf",
+      "Mess_Rules.pdf"
+    ],
+    "url": "https://walchandsangli.ac.in/communication/"
+  },
+  {
+    "id": "not-5",
+    "title": "Technova 2025 - National Technical Symposium Call for Paper & Project Submissions",
+    "content": "WCE Sangli is proud to announce Technova 2025, our flagship national technical fest to be held on 7th-9th February 2025. Competitions include National Hackathon (Prize pool: 2.5 Lakhs), AI/Robotics Challenge, Bridge Building, CAD Design Mania, and Paper Presentation. Registrations are open on the Technova portal.",
+    "category": "Events",
+    "date": "2024-10-22",
+    "isPinned": false,
+    "author": "Student Council & Faculty Advisors",
+    "attachments": [
+      "Technova_Rulebook_2025.pdf"
+    ],
+    "url": "https://walchandsangli.ac.in/campus-life/online-platforms/"
+  },
+  {
+    "id": "not-6",
+    "title": "DTE Maharashtra Scholarship Verification (MahaDBT 2024-25) - Last Date Extension",
+    "content": "Students eligible for EBC, Freeship, SC/ST, VJNT, and Minority scholarships through MahaDBT portal must submit hard copies of their income certificates, caste validity, and previous year grade sheets to Student Section Counter 3 before 10th November 2024.",
+    "category": "Admission",
+    "date": "2024-10-18",
+    "isPinned": false,
+    "author": "Student Welfare & Scholarship Section",
+    "attachments": [
+      "MahaDBT_Checklist_2024.pdf"
+    ],
+    "url": "https://walchandsangli.ac.in/admissions/fees-as-per-authorities-dte-fra/"
+  },
+  {
+    "id": "live-not-1",
+    "title": "Calendars and Schedules",
+    "content": "Official notice published on Walchand College of Engineering website. Please refer to attachment or link for full details.",
+    "category": "General",
+    "date": "2026-11-02",
+    "isPinned": false,
+    "author": "WCE Sangli Administration",
+    "attachments": [],
+    "url": "https://walchandsangli.ac.in/academics-programmes/calendars-and-schedules/"
+  },
+  {
+    "id": "live-not-2",
+    "title": "Examination Notices and Schedule",
+    "content": "Official notice published on Walchand College of Engineering website. Please refer to attachment or link for full details.",
+    "category": "Exam",
+    "date": "2026-11-02",
+    "isPinned": false,
+    "author": "WCE Sangli Administration",
+    "attachments": [],
+    "url": "https://walchandsangli.ac.in/academics-programmes/examination-notices-and-schedule/"
+  },
+  {
+    "id": "live-not-3",
+    "title": "Calendars and Schedules",
+    "content": "Official notice published on Walchand College of Engineering website. Please refer to attachment or link for full details.",
+    "category": "General",
+    "date": "2026-11-02",
+    "isPinned": false,
+    "author": "WCE Sangli Administration",
+    "attachments": [],
+    "url": "https://walchandsangli.ac.in/academics-programmes/calendars-and-schedules/"
+  },
+  {
+    "id": "live-not-4",
+    "title": "Examination Notices and Schedule",
+    "content": "Official notice published on Walchand College of Engineering website. Please refer to attachment or link for full details.",
+    "category": "Exam",
+    "date": "2026-11-02",
+    "isPinned": false,
+    "author": "WCE Sangli Administration",
+    "attachments": [],
+    "url": "https://walchandsangli.ac.in/academics-programmes/examination-notices-and-schedule/"
+  },
+  {
+    "id": "live-not-5",
+    "title": "Seat Allotted through CET Cell for CAP 1, 2, 3 & 4 (AY 2026–27)",
+    "content": "Official notice published on Walchand College of Engineering website. Please refer to attachment or link for full details.",
+    "category": "General",
+    "date": "2026-11-02",
+    "isPinned": false,
+    "author": "WCE Sangli Administration",
+    "attachments": [
+      "WCE_CAP-Reporting-New-Admissions-for-2026-27-2.pdf"
+    ],
+    "url": "https://walchandsangli.ac.in/wp-content/uploads/WCE_CAP-Reporting-New-Admissions-for-2026-27-2.pdf"
+  }
+]

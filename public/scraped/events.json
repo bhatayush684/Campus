@@ -1,0 +1,30 @@
+[
+  {
+    "id": "ev-1",
+    "title": "Technova 2025 - National Technical Symposium",
+    "date": "Feb 7 - 9, 2025",
+    "venue": "WCE Sangli Main Campus",
+    "description": "Flagship national event featuring 24-hr Hackathon, Robo-Wars, Paper Presentation, and Tech-Expos."
+  },
+  {
+    "id": "ev-2",
+    "title": "WCE Annual Alumni Meet 2025",
+    "date": "Jan 11, 2025",
+    "venue": "Tilak Hall & Amphitheatre",
+    "description": "Reunion of 500+ distinguished alumni across the globe from industry and academia."
+  },
+  {
+    "id": "ev-3",
+    "title": "IEEE International Conference on Smart Computing & Systems",
+    "date": "Dec 18 - 20, 2024",
+    "venue": "Auditorium & Virtual Track",
+    "description": "Peer-reviewed research paper presentations indexed in IEEE Xplore."
+  },
+  {
+    "id": "ev-4",
+    "title": "Annual Cultural & Sports Gathering (Vasant)",
+    "date": "Feb 20 - 24, 2025",
+    "venue": "WCE Sports Complex & Open Ground",
+    "description": "Intra-college cultural competitions, drama, music concerts, and inter-branch cricket/football tournaments."
+  }
+]

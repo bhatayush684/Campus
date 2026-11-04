@@ -1,0 +1,50 @@
+================================================================================
+WALCHAND COLLEGE OF ENGINEERING, SANGLI (AUTONOMOUS INSTITUTE)
+DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING
+COURSE CODE: 4CS301 | MACHINE LEARNING (COMPLETE REVISION STUDY NOTES)
+================================================================================
+
+UNIT 1: INTRODUCTION & REGRESSION
+- Linear Regression: Minimizes Mean Squared Error (MSE). Cost function J(w,b) = (1/2m) * sum((y_hat - y)^2).
+- Gradient Descent: w_j = w_j - alpha * (dJ/dw_j).
+- Regularization:
+  * L2 Regularization (Ridge): Penalty = lambda * sum(w_i^2). Shrinks weights, prevents multicollinearity.
+  * L1 Regularization (Lasso): Penalty = lambda * sum(|w_i|). Drives non-essential weights to zero (Feature Selection).
+
+UNIT 2: CLASSIFICATION & LOGISTIC REGRESSION
+- Sigmoid Function: g(z) = 1 / (1 + e^-z). Maps outputs to probability range (0, 1).
+- Decision Boundary: Classify as 1 if g(z) >= 0.5 (i.e. z >= 0), else 0.
+- Cross-Entropy Loss: L = - [ y*log(y_hat) + (1-y)*log(1-y_hat) ].
+- Performance Metrics:
+  * Precision = TP / (TP + FP)  -> Focus on minimizing False Positives.
+  * Recall (Sensitivity) = TP / (TP + FN) -> Focus on minimizing False Negatives.
+  * F1-Score = 2 * (Precision * Recall) / (Precision + Recall).
+  * ROC-AUC: Receiver Operating Characteristic curve plotting TPR vs FPR.
+
+UNIT 3: DECISION TREES & ENSEMBLE METHODS
+- Entropy: H(S) = - sum( p_i * log2(p_i) ).
+- Information Gain: IG(S, A) = H(S) - sum( (|S_v|/|S|) * H(S_v) ).
+- Random Forests: Combines Bagging (Bootstrap Aggregation) + Random Feature Subset selection.
+- Boosting: Sequential model training where each learner focuses on errors of previous models (AdaBoost, XGBoost).
+
+UNIT 4: SUPPORT VECTOR MACHINES (SVM)
+- Maximum Margin Hyperplane: Distance = 2 / ||w||. We maximize 2/||w|| <=> minimize (1/2)*||w||^2.
+- Kernel Trick: Maps inputs to higher dimensional Hilbert space using phi(x).
+  * RBF (Radial Basis Function) Kernel: K(x, z) = exp(-gamma * ||x - z||^2).
+
+UNIT 5: CLUSTERING & DIMENSIONALITY REDUCTION
+- K-Means: Iteratively assigns points to nearest centroid and updates centroids. Sensitive to initialization (use K-Means++).
+- Elbow Method: Identifies optimal K where WCSS (Within-Cluster Sum of Squares) rate of decrease flattens.
+- PCA (Principal Component Analysis):
+  1. Standardize features.
+  2. Compute Covariance Matrix: Sigma = (1/m) * X^T * X.
+  3. Calculate Eigenvectors & Eigenvalues.
+  4. Project data onto top k eigenvectors.
+
+UNIT 6: DEEP LEARNING FOUNDATIONS
+- Multi-Layer Perceptron (MLP): Input layer, Hidden layers with non-linear activations (ReLU, LeakyReLU, GELU), Output layer.
+- Backpropagation: Calculates gradients using the Chain Rule of calculus.
+- Optimizers: Stochastic Gradient Descent (SGD) with Momentum, RMSprop, Adam (Adaptive Moment Estimation).
+
+[Compiled by WCE Sangli AI & Data Science Student Study Group]
+================================================================================

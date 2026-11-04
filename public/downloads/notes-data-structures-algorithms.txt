@@ -1,0 +1,17 @@
+================================================================================
+WALCHAND COLLEGE OF ENGINEERING, SANGLI
+COURSE CODE: 4CS201 | DATA STRUCTURES & ALGORITHMS QUICK COMPASS
+================================================================================
+
+1. TIME COMPLEXITY MATRIX
+- Array Access: O(1) | Search: O(N) | Insertion/Deletion: O(N)
+- Hash Table: Average Search, Insert, Delete = O(1). Worst case = O(N).
+- Binary Search Tree (Balanced / AVL): Search, Insert, Delete = O(log N).
+- Quick Sort: Average O(N log N), Worst case O(N^2) when pivot is extreme.
+- Merge Sort: Always O(N log N) time, O(N) auxiliary space.
+
+2. GRAPH ALGORITHMS
+- BFS: Uses Queue. Finds shortest path in unweighted graphs. Time: O(V + E).
+- DFS: Uses Stack / Recursion. Used for topological sorting, cycle detection. Time: O(V + E).
+- Dijkstra: Single Source Shortest Path with non-negative edge weights. Time: O((V + E) log V) with Min-Heap.
+- Kruskal's MST: Greedy algorithm using Disjoint Set Union (DSU). Sorts all edges: O(E log E).

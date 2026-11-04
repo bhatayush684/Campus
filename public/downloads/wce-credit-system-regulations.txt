@@ -1,0 +1,27 @@
+================================================================================
+WALCHAND COLLEGE OF ENGINEERING, SANGLI (AUTONOMOUS)
+ACADEMIC CREDIT SYSTEM & GRADING REGULATIONS (2024-25)
+================================================================================
+
+1. GRADING SCALE:
+Letter Grade | Grade Points | Marks Percentage Range | Performance Description
+-------------+--------------+------------------------+------------------------
+AA           | 10           | 90% and above          | Outstanding
+AB           | 9            | 80% to 89%             | Excellent
+BB           | 8            | 70% to 79%             | Very Good
+BC           | 7            | 60% to 69%             | Good
+CC           | 6            | 50% to 59%             | Fair
+CD           | 5            | 45% to 49%             | Average
+DD           | 4            | 40% to 44%             | Poor (Passing threshold)
+FF           | 0            | Below 40%              | Fail (Must appear for Re-exam)
+XX           | 0            | Attendance < 75%       | Detained
+
+2. SGPA CALCULATION:
+SGPA = Sum(Course Credits * Grade Points Earned) / Sum(Course Credits in Semester)
+
+3. CGPA CALCULATION:
+CGPA = Cumulative Sum of (Credits * Points across all completed semesters) / Total Credits Registered
+
+4. ATKT RULES:
+- A student is eligible to enter TY (3rd Year) if they have cleared all First Year (FY) subjects.
+- Maximum allowable backlogs to proceed to higher semester: 4 theory heads of passing.

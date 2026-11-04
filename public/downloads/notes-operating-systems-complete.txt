@@ -1,0 +1,26 @@
+================================================================================
+WALCHAND COLLEGE OF ENGINEERING, SANGLI
+COURSE CODE: 4CS304 | OPERATING SYSTEMS CORE STUDY GUIDE
+================================================================================
+
+1. CPU SCHEDULING ALGORITHMS
+- FCFS: Non-preemptive. Suffers from Convoy Effect.
+- SJF (Shortest Job First): Provably optimal average waiting time. Impossible to know future burst length in general OS.
+- Round Robin (RR): Preemptive with time quantum q. Too large q -> behaves like FCFS. Too small q -> high context switch overhead.
+
+2. SYNCHRONIZATION WITH SEMAPHORES
+- Wait / P() operation:
+  wait(S) {
+    while (S <= 0); // busy wait or block
+    S--;
+  }
+- Signal / V() operation:
+  signal(S) {
+    S++;
+  }
+- Classical Problems: Producer-Consumer (Bounded Buffer), Readers-Writers (Reader Priority vs Writer Priority), Dining Philosophers.
+
+3. VIRTUAL MEMORY & PAGE REPLACEMENT
+- Page Fault: Trap generated when requested logical page is not present in physical RAM (valid-invalid bit is 0).
+- Optimal Algorithm (OPT/Belady): Replaces page that will not be used for longest time in future.
+- LRU (Least Recently Used): Approximated in practice using Clock Algorithm / Second Chance.

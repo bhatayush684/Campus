@@ -1,0 +1,42 @@
+================================================================================
+WALCHAND COLLEGE OF ENGINEERING, SANGLI
+DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING
+COURSE CODE: 4CS302 | DATABASE MANAGEMENT SYSTEMS (EXAM COMPREHENSIVE NOTES)
+================================================================================
+
+1. NORMALIZATION SUMMARY (1NF TO BCNF)
+- 1NF: Attribute values must be atomic (no repeating groups or multi-valued attributes).
+- 2NF: Must be in 1NF AND no Partial Dependencies (no non-prime attribute depends on a subset of candidate key).
+- 3NF: Must be in 2NF AND no Transitive Dependencies (X -> Y where Y is non-prime and X is not super key).
+- BCNF (Boyce-Codd): For every non-trivial functional dependency X -> Y, X MUST be a Super Key.
+
+2. TRANSACTION MANAGEMENT & ACID PROPERTIES
+- A (Atomicity): All-or-nothing execution. Handled by Recovery Manager (WAL, Undo logs).
+- C (Consistency): Preserves database invariants before and after transaction.
+- I (Isolation): Intermediate states invisible to concurrent transactions. Handled by Concurrency Control (Locking, MVCC).
+- D (Durability): Committed updates persist even across system power failures. Handled by Redo logs.
+
+3. CONCURRENCY CONTROL PROTOCOLS
+- Two-Phase Locking (2PL):
+  * Growing Phase: Transactions may acquire locks; cannot release any lock.
+  * Shrinking Phase: Transactions may release locks; cannot acquire new locks.
+  * Strict 2PL: Holds all Exclusive (X) locks until transaction commits or aborts. Guarantees strict schedules (no cascading aborts).
+- Deadlock Handling:
+  * Prevention: Wait-Die scheme (Older waits, younger dies) or Wound-Wait scheme (Older wounds, younger waits).
+  * Detection: Wait-For-Graph (WFG) cycle detection algorithm.
+
+4. SQL ESSENTIAL CHEAT SHEET
+- Window Functions:
+  SELECT dept, name, salary,
+         RANK() OVER (PARTITION BY dept ORDER BY salary DESC) as rank
+  FROM employees;
+- Common Table Expressions (CTE):
+  WITH TopEarners AS (
+    SELECT * FROM employees WHERE salary > 100000
+  )
+  SELECT * FROM TopEarners;
+- Triggers:
+  CREATE TRIGGER audit_log AFTER UPDATE ON accounts
+  FOR EACH ROW EXECUTE FUNCTION log_balance_change();
+
+[End of Notes | WCE Autonomous Syllabus 2024-25]

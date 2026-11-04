@@ -1,0 +1,614 @@
+[
+  {
+    "id": "cse-301",
+    "courseCode": "4CS301",
+    "title": "Machine Learning",
+    "department": "CSE",
+    "year": "TY",
+    "semester": "Sem 5",
+    "credits": 4,
+    "hours": "3L - 0T - 2P",
+    "category": "Professional Core Course",
+    "syllabusUrl": "https://walchandsangli.ac.in/department-of-computer-engineering/b-tech-curriculum/",
+    "downloadUrl": "/downloads/notes-machine-learning-complete.txt",
+    "description": "Supervised, Unsupervised learning, Neural Networks, SVMs, and Ensemble Methods with Python & Scikit-learn.",
+    "units": [
+      {
+        "unit": 1,
+        "title": "Introduction & Linear Regression",
+        "topics": "Linear regression, cost function, gradient descent, polynomial regression, regularization (Ridge & Lasso)."
+      },
+      {
+        "unit": 2,
+        "title": "Classification & Logistic Regression",
+        "topics": "Logistic regression, odds ratio, decision boundaries, ROC curve, AUC, Multi-class classification."
+      },
+      {
+        "unit": 3,
+        "title": "Decision Trees & Ensemble Methods",
+        "topics": "ID3, C4.5, CART, Entropy, Information Gain, Random Forests, Bagging, Boosting (AdaBoost, XGBoost)."
+      },
+      {
+        "unit": 4,
+        "title": "Support Vector Machines & Kernels",
+        "topics": "Linear SVM, Hard and Soft margin, Kernel trick, RBF kernel, Hyperparameter tuning."
+      },
+      {
+        "unit": 5,
+        "title": "Unsupervised Learning & Clustering",
+        "topics": "K-Means, Hierarchical clustering, DBSCAN, Principal Component Analysis (PCA) dimensionality reduction."
+      },
+      {
+        "unit": 6,
+        "title": "Neural Networks & Deep Learning Basics",
+        "topics": "Perceptron, Multi-Layer Perceptron (MLP), Backpropagation, Activation functions, Loss functions."
+      }
+    ],
+    "textbooks": [
+      "Pattern Recognition and Machine Learning - Christopher Bishop",
+      "Machine Learning - Tom Mitchell"
+    ],
+    "examPattern": "ISE: 20%, MSE: 30%, ESE: 50%"
+  },
+  {
+    "id": "cse-302",
+    "courseCode": "4CS302",
+    "title": "Database Management Systems (DBMS)",
+    "department": "CSE",
+    "year": "TY",
+    "semester": "Sem 5",
+    "credits": 4,
+    "hours": "3L - 0T - 2P",
+    "category": "Professional Core Course",
+    "syllabusUrl": "https://walchandsangli.ac.in/department-of-computer-engineering/b-tech-curriculum/",
+    "downloadUrl": "/downloads/notes-dbms-sql-complete.txt",
+    "description": "Relational data models, Normalization (1NF to BCNF), Transaction processing, Concurrency control, and NoSQL databases.",
+    "units": [
+      {
+        "unit": 1,
+        "title": "Data Modeling & ER Diagrams",
+        "topics": "Three-schema architecture, ER modeling, Enhanced ER, relational constraints."
+      },
+      {
+        "unit": 2,
+        "title": "Relational Algebra & Advanced SQL",
+        "topics": "Relational algebra operations, nested queries, joins, triggers, views, stored procedures."
+      },
+      {
+        "unit": 3,
+        "title": "Relational Database Design & Normalization",
+        "topics": "Functional dependencies, 1NF, 2NF, 3NF, BCNF, multivalued dependencies, 4NF."
+      },
+      {
+        "unit": 4,
+        "title": "Transaction Processing",
+        "topics": "ACID properties, serializability, schedule testing, recoverable & cascadeless schedules."
+      },
+      {
+        "unit": 5,
+        "title": "Concurrency Control & Recovery",
+        "topics": "Two-Phase Locking (2PL), Timestamp ordering, Deadlock detection, Write-Ahead Logging (WAL)."
+      },
+      {
+        "unit": 6,
+        "title": "NoSQL & Modern Databases",
+        "topics": "CAP theorem, Key-Value stores, Document databases (MongoDB), Graph databases (Neo4j)."
+      }
+    ],
+    "textbooks": [
+      "Database System Concepts - Silberschatz, Korth, Sudarshan",
+      "Fundamentals of Database Systems - Elmasri & Navathe"
+    ],
+    "examPattern": "ISE: 20%, MSE: 30%, ESE: 50%"
+  },
+  {
+    "id": "cse-303",
+    "courseCode": "4CS303",
+    "title": "Computer Networks",
+    "department": "CSE",
+    "year": "TY",
+    "semester": "Sem 5",
+    "credits": 3,
+    "hours": "3L - 0T - 0P",
+    "category": "Professional Core Course",
+    "syllabusUrl": "https://walchandsangli.ac.in/department-of-computer-engineering/b-tech-curriculum/",
+    "downloadUrl": "/downloads/notes-computer-networks-complete.txt",
+    "description": "OSI and TCP/IP stack, routing protocols, TCP congestion control, DNS, HTTP/3, and network security.",
+    "units": [
+      {
+        "unit": 1,
+        "title": "Network Layering & Physical Layer",
+        "topics": "OSI vs TCP/IP, packet vs circuit switching, transmission media, framing, error detection (CRC)."
+      },
+      {
+        "unit": 2,
+        "title": "Data Link Layer & MAC Sublayer",
+        "topics": "Flow control (Sliding window), CSMA/CD, Ethernet standards (802.3), Wireless 802.11."
+      },
+      {
+        "unit": 3,
+        "title": "Network Layer & IP Addressing",
+        "topics": "IPv4 vs IPv6, CIDR, Subnetting, ARP, DHCP, ICMP protocol."
+      },
+      {
+        "unit": 4,
+        "title": "Routing Algorithms & Protocols",
+        "topics": "Link-State (OSPF), Distance Vector (RIP), Path Vector (BGP), Multicast routing."
+      },
+      {
+        "unit": 5,
+        "title": "Transport Layer Protocols",
+        "topics": "UDP, TCP connection lifecycle, sliding window flow control, TCP Tahoe, Reno, Cubic congestion control."
+      },
+      {
+        "unit": 6,
+        "title": "Application Layer & Security",
+        "topics": "DNS, HTTP/1.1 to HTTP/3, SMTP, TLS/SSL handshake, Firewalls."
+      }
+    ],
+    "textbooks": [
+      "Computer Networking: A Top-Down Approach - Kurose & Ross",
+      "Computer Networks - Andrew S. Tanenbaum"
+    ],
+    "examPattern": "ISE: 20%, MSE: 30%, ESE: 50%"
+  },
+  {
+    "id": "cse-304",
+    "courseCode": "4CS304",
+    "title": "Operating Systems",
+    "department": "CSE",
+    "year": "SY",
+    "semester": "Sem 4",
+    "credits": 4,
+    "hours": "3L - 0T - 2P",
+    "category": "Professional Core Course",
+    "syllabusUrl": "https://walchandsangli.ac.in/department-of-computer-engineering/b-tech-curriculum/",
+    "downloadUrl": "/downloads/notes-operating-systems-complete.txt",
+    "description": "Processes, CPU scheduling, synchronization primitives (mutex, semaphores), virtual memory, and file systems.",
+    "units": [
+      {
+        "unit": 1,
+        "title": "Operating System Architectures",
+        "topics": "Monolithic vs Microkernel, dual-mode execution, system calls, interrupt handling."
+      },
+      {
+        "unit": 2,
+        "title": "Process Management & Scheduling",
+        "topics": "PCB, context switching, IPC, FCFS, SJF, Round Robin, Priority, Multi-level feedback queues."
+      },
+      {
+        "unit": 3,
+        "title": "Synchronization & Concurrency",
+        "topics": "Critical section problem, Peterson algorithm, Semaphores, Mutex locks, Classical IPC problems."
+      },
+      {
+        "unit": 4,
+        "title": "Deadlocks",
+        "topics": "Deadlock characterization, Banker algorithm for avoidance, detection and recovery strategies."
+      },
+      {
+        "unit": 5,
+        "title": "Memory Management & Paging",
+        "topics": "Logical vs physical address, paging, segmentation, TLB, page fault handling, page replacement (LRU, FIFO, Clock)."
+      },
+      {
+        "unit": 6,
+        "title": "Storage & File Systems",
+        "topics": "Directory structures, inode representation, disk scheduling (SCAN, C-SCAN, LOOK), RAID architectures."
+      }
+    ],
+    "textbooks": [
+      "Operating System Concepts - Silberschatz, Galvin, Gagne",
+      "Modern Operating Systems - Andrew Tanenbaum"
+    ],
+    "examPattern": "ISE: 20%, MSE: 30%, ESE: 50%"
+  },
+  {
+    "id": "cse-201",
+    "courseCode": "4CS201",
+    "title": "Data Structures & Algorithms",
+    "department": "CSE",
+    "year": "SY",
+    "semester": "Sem 3",
+    "credits": 4,
+    "hours": "3L - 0T - 2P",
+    "category": "Professional Core Course",
+    "syllabusUrl": "https://walchandsangli.ac.in/department-of-computer-engineering/b-tech-curriculum/",
+    "downloadUrl": "/downloads/notes-data-structures-algorithms.txt",
+    "description": "Linear & Non-linear data structures, asymptotic analysis, Divide & Conquer, Dynamic Programming, and Greedy algorithms.",
+    "units": [
+      {
+        "unit": 1,
+        "title": "Asymptotic Analysis & Arrays/Lists",
+        "topics": "Big-O, Big-Omega, Big-Theta, Singly & Doubly linked lists, Circular linked lists."
+      },
+      {
+        "unit": 2,
+        "title": "Stacks, Queues & Applications",
+        "topics": "Infix to Postfix conversion, balanced parentheses, Circular queue, Deque, Priority Queue."
+      },
+      {
+        "unit": 3,
+        "title": "Trees & Binary Search Trees",
+        "topics": "Binary Tree traversals (Inorder, Preorder, Postorder, Level order), BST operations, AVL Trees, B-Trees."
+      },
+      {
+        "unit": 4,
+        "title": "Hashing & Hash Tables",
+        "topics": "Hash functions, collision resolution (Chaining, Linear Probing, Quadratic Probing), Universal hashing."
+      },
+      {
+        "unit": 5,
+        "title": "Graphs & Traversals",
+        "topics": "Adjacency list & matrix, BFS, DFS, Topological sort, Dijkstra shortest path, Prim and Kruskal MST."
+      },
+      {
+        "unit": 6,
+        "title": "Algorithm Design Paradigms",
+        "topics": "Divide and conquer (Merge & Quick sort), Dynamic programming (0/1 Knapsack, LCS), Greedy method."
+      }
+    ],
+    "textbooks": [
+      "Introduction to Algorithms (CLRS) - Cormen, Leiserson, Rivest, Stein",
+      "Data Structures using C - Reema Thareja"
+    ],
+    "examPattern": "ISE: 20%, MSE: 30%, ESE: 50%"
+  },
+  {
+    "id": "it-301",
+    "courseCode": "4IT301",
+    "title": "Web Technologies & Cloud Computing",
+    "department": "IT",
+    "year": "TY",
+    "semester": "Sem 5",
+    "credits": 4,
+    "hours": "3L - 0T - 2P",
+    "category": "Professional Core Course",
+    "syllabusUrl": "https://walchandsangli.ac.in/department-of-information-technology/b-tech-curriculum-with-minors-it/",
+    "downloadUrl": "/downloads/notes-machine-learning-complete.txt",
+    "description": "Modern full-stack web development, REST APIs, Microservices, Docker, Kubernetes, and AWS Cloud services.",
+    "units": [
+      {
+        "unit": 1,
+        "title": "Web Architecture & Modern JavaScript",
+        "topics": "HTTP/HTTPS protocols, ES6+ features, Async/Await, DOM manipulation, Client-server model."
+      },
+      {
+        "unit": 2,
+        "title": "Frontend Frameworks (React)",
+        "topics": "Component lifecycle, Hooks, State management, Virtual DOM, React Router."
+      },
+      {
+        "unit": 3,
+        "title": "Backend & RESTful Services",
+        "topics": "Node.js, Express framework, Middleware, JWT authentication, REST API design standards."
+      },
+      {
+        "unit": 4,
+        "title": "Cloud Computing Foundations",
+        "topics": "IaaS, PaaS, SaaS models, AWS EC2, S3, RDS, Serverless compute (AWS Lambda)."
+      },
+      {
+        "unit": 5,
+        "title": "Containers & Microservices",
+        "topics": "Docker containerization, Dockerfile, Docker Compose, Kubernetes pods, services and deployments."
+      },
+      {
+        "unit": 6,
+        "title": "DevOps & CI/CD Pipelines",
+        "topics": "Git workflows, GitHub Actions, Continuous Integration, Automated testing and deployment."
+      }
+    ],
+    "textbooks": [
+      "Cloud Computing: Concepts, Technology & Architecture - Thomas Erl",
+      "Full Stack React Projects - Shama Hoque"
+    ],
+    "examPattern": "ISE: 20%, MSE: 30%, ESE: 50%"
+  },
+  {
+    "id": "entc-301",
+    "courseCode": "4ET301",
+    "title": "Digital Signal Processing (DSP)",
+    "department": "ENTC",
+    "year": "TY",
+    "semester": "Sem 5",
+    "credits": 4,
+    "hours": "3L - 0T - 2P",
+    "category": "Professional Core Course",
+    "syllabusUrl": "https://walchandsangli.ac.in/department-of-electronics-engg/b-tech-electronics-engineering-curriculum-electronics/",
+    "downloadUrl": "/downloads/notes-data-structures-algorithms.txt",
+    "description": "Discrete-Time signals, Z-Transform, Discrete Fourier Transform (DFT), FFT algorithms, and IIR/FIR filter design.",
+    "units": [
+      {
+        "unit": 1,
+        "title": "Discrete Time Signals & Systems",
+        "topics": "Sampling theorem, Nyquist rate, aliasing, linearity, time-invariance, convolution sum."
+      },
+      {
+        "unit": 2,
+        "title": "Z-Transform & Analysis of LTI Systems",
+        "topics": "ROC properties, Inverse Z-Transform, pole-zero plots, stability criteria."
+      },
+      {
+        "unit": 3,
+        "title": "Discrete Fourier Transform (DFT)",
+        "topics": "DFT definition, circular convolution, relationship between DFT and DTFT."
+      },
+      {
+        "unit": 4,
+        "title": "Fast Fourier Transform (FFT)",
+        "topics": "Decimation-In-Time (DIT) FFT, Decimation-In-Frequency (DIF) FFT, computational efficiency."
+      },
+      {
+        "unit": 5,
+        "title": "IIR Digital Filter Design",
+        "topics": "Butterworth and Chebyshev approximation, Bilinear transformation method, Impulse invariance."
+      },
+      {
+        "unit": 6,
+        "title": "FIR Digital Filter Design",
+        "topics": "Linear phase FIR filters, Windowing technique (Hamming, Hanning, Blackman), Frequency sampling."
+      }
+    ],
+    "textbooks": [
+      "Digital Signal Processing: Principles, Algorithms & Applications - Proakis & Manolakis",
+      "Signals and Systems - Oppenheim & Schafer"
+    ],
+    "examPattern": "ISE: 20%, MSE: 30%, ESE: 50%"
+  },
+  {
+    "id": "cv-301",
+    "courseCode": "4CV301",
+    "title": "Structural Analysis & Design",
+    "department": "Civil",
+    "year": "TY",
+    "semester": "Sem 5",
+    "credits": 4,
+    "hours": "3L - 0T - 2P",
+    "category": "Professional Core Course",
+    "syllabusUrl": "https://walchandsangli.ac.in/department-of-civil-engineering/b-tech-curriculum-with-minors-ce/",
+    "downloadUrl": "/downloads/notes-data-structures-algorithms.txt",
+    "description": "Analysis of determinate and indeterminate structures, Slope Deflection, Moment Distribution, and Matrix methods.",
+    "units": [
+      {
+        "unit": 1,
+        "title": "Deflection of Determinate Beams",
+        "topics": "Moment area method, Conjugate beam method, Castigliano theorem for trusses."
+      },
+      {
+        "unit": 2,
+        "title": "Slope Deflection Method",
+        "topics": "Derivation of slope deflection equations, analysis of continuous beams, sway and non-sway frames."
+      },
+      {
+        "unit": 3,
+        "title": "Moment Distribution Method",
+        "topics": "Hardy Cross method, carry-over factor, distribution factor, application to continuous beams."
+      },
+      {
+        "unit": 4,
+        "title": "Influence Line Diagrams",
+        "topics": "Muller-Breslau principle for determinate and indeterminate beams, moving loads."
+      },
+      {
+        "unit": 5,
+        "title": "Matrix Stiffness Method",
+        "topics": "Element stiffness matrix, global transformation, member coordinate system."
+      },
+      {
+        "unit": 6,
+        "title": "Plastic Analysis of Steel Frames",
+        "topics": "Plastic hinges, shape factor, collapse mechanism for portal frames."
+      }
+    ],
+    "textbooks": [
+      "Structural Analysis - R.C. Hibbeler",
+      "Basic Structural Analysis - C.S. Reddy"
+    ],
+    "examPattern": "ISE: 20%, MSE: 30%, ESE: 50%"
+  },
+  {
+    "id": "me-301",
+    "courseCode": "4ME301",
+    "title": "Applied Thermodynamics & Heat Transfer",
+    "department": "Mechanical",
+    "year": "TY",
+    "semester": "Sem 5",
+    "credits": 4,
+    "hours": "3L - 0T - 2P",
+    "category": "Professional Core Course",
+    "syllabusUrl": "https://walchandsangli.ac.in/department-of-mechanical-engineering/overview/",
+    "downloadUrl": "/downloads/notes-data-structures-algorithms.txt",
+    "description": "Vapor power cycles (Rankine), gas turbine cycles (Brayton), refrigeration, conduction, convection, and radiation.",
+    "units": [
+      {
+        "unit": 1,
+        "title": "Vapor Power Cycles",
+        "topics": "Carnot vapor cycle, Rankine cycle, reheat and regenerative feed-water heating, cogeneration."
+      },
+      {
+        "unit": 2,
+        "title": "Gas Turbine & Jet Propulsion",
+        "topics": "Brayton cycle with intercooling and reheat, open and closed cycles, turbojet engine analysis."
+      },
+      {
+        "unit": 3,
+        "title": "Refrigeration & Psychrometry",
+        "topics": "Vapor compression refrigeration cycle (VCRS), refrigerants, psychrometric charts, air conditioning."
+      },
+      {
+        "unit": 4,
+        "title": "Heat Conduction (Steady & Transient)",
+        "topics": "Fourier law, 1D conduction with heat generation, composite walls, thermal contact resistance."
+      },
+      {
+        "unit": 5,
+        "title": "Convective Heat Transfer",
+        "topics": "Laminar and turbulent boundary layers, forced convection over cylinders and plates, natural convection."
+      },
+      {
+        "unit": 6,
+        "title": "Thermal Radiation & Heat Exchangers",
+        "topics": "Stefan-Boltzmann law, Planck distribution, view factor algebra, LMTD and NTU-effectiveness methods."
+      }
+    ],
+    "textbooks": [
+      "Thermodynamics: An Engineering Approach - Yunus Cengel & Boles",
+      "Fundamentals of Heat and Mass Transfer - Incropera & DeWitt"
+    ],
+    "examPattern": "ISE: 20%, MSE: 30%, ESE: 50%"
+  },
+  {
+    "id": "el-301",
+    "courseCode": "4EL301",
+    "title": "Control Systems Engineering",
+    "department": "Electrical",
+    "year": "TY",
+    "semester": "Sem 5",
+    "credits": 4,
+    "hours": "3L - 0T - 2P",
+    "category": "Professional Core Course",
+    "syllabusUrl": "https://walchandsangli.ac.in/department-of-electrical-engg/overview-electrical/",
+    "downloadUrl": "/downloads/notes-data-structures-algorithms.txt",
+    "description": "Transfer functions, block diagram reduction, Root Locus, Bode plots, Nyquist criterion, and state-space representation.",
+    "units": [
+      {
+        "unit": 1,
+        "title": "System Modeling & Feedback",
+        "topics": "Open-loop vs closed-loop, transfer function derivation, mechanical and electrical analogies."
+      },
+      {
+        "unit": 2,
+        "title": "Time Response Analysis",
+        "topics": "Test signals, first and second order systems, steady-state errors and error constants."
+      },
+      {
+        "unit": 3,
+        "title": "Stability & Routh-Hurwitz",
+        "topics": "Concept of absolute and relative stability, Routh stability criterion, special cases."
+      },
+      {
+        "unit": 4,
+        "title": "Root Locus Technique",
+        "topics": "Construction rules for root locus, effect of adding poles and zeros, stability margins."
+      },
+      {
+        "unit": 5,
+        "title": "Frequency Response (Bode & Nyquist)",
+        "topics": "Bode plots, gain margin, phase margin, Polar plots, Nyquist stability criterion."
+      },
+      {
+        "unit": 6,
+        "title": "State-Space Representation",
+        "topics": "State variables, state-space equation, controllability and observability (Kalman test)."
+      }
+    ],
+    "textbooks": [
+      "Control Systems Engineering - Norman S. Nise",
+      "Modern Control Engineering - Katsuhiko Ogata"
+    ],
+    "examPattern": "ISE: 20%, MSE: 30%, ESE: 50%"
+  },
+  {
+    "id": "aiml-301",
+    "courseCode": "4AI301",
+    "title": "Deep Learning & Computer Vision",
+    "department": "AI/ML",
+    "year": "TY",
+    "semester": "Sem 5",
+    "credits": 4,
+    "hours": "3L - 0T - 2P",
+    "category": "Professional Core Course",
+    "syllabusUrl": "https://walchandsangli.ac.in/department-of-artificial-intelligence-and-machine-learning/overview-ai/",
+    "downloadUrl": "/downloads/notes-machine-learning-complete.txt",
+    "description": "Convolutional Neural Networks (CNNs), Object Detection (YOLO), Transformers, and Generative Adversarial Networks (GANs).",
+    "units": [
+      {
+        "unit": 1,
+        "title": "Deep Feedforward Networks",
+        "topics": "Activation functions (ReLU, GELU), batch normalization, dropout, optimization (Adam, RMSProp)."
+      },
+      {
+        "unit": 2,
+        "title": "Convolutional Neural Networks",
+        "topics": "Convolution kernels, pooling layers, ResNet, EfficientNet architectures, transfer learning."
+      },
+      {
+        "unit": 3,
+        "title": "Object Detection & Segmentation",
+        "topics": "R-CNN family, YOLOv8, SSD, semantic segmentation with U-Net, Mask R-CNN."
+      },
+      {
+        "unit": 4,
+        "title": "Sequence Models & Attention",
+        "topics": "RNNs, LSTM, GRU, self-attention mechanism, Multi-head attention."
+      },
+      {
+        "unit": 5,
+        "title": "Vision Transformers (ViT)",
+        "topics": "Patch embeddings, encoder architecture, tokenization in images, Swin Transformer."
+      },
+      {
+        "unit": 6,
+        "title": "Generative Models",
+        "topics": "Variational Autoencoders (VAEs), Generative Adversarial Networks (DCGAN), Diffusion models overview."
+      }
+    ],
+    "textbooks": [
+      "Deep Learning - Ian Goodfellow, Yoshua Bengio, Aaron Courville",
+      "Computer Vision: Algorithms and Applications - Richard Szeliski"
+    ],
+    "examPattern": "ISE: 20%, MSE: 30%, ESE: 50%"
+  },
+  {
+    "id": "rob-301",
+    "courseCode": "4RA301",
+    "title": "Robotics Kinematics & Autonomous Navigation",
+    "department": "Robotics",
+    "year": "TY",
+    "semester": "Sem 5",
+    "credits": 4,
+    "hours": "3L - 0T - 2P",
+    "category": "Professional Core Course",
+    "syllabusUrl": "https://walchandsangli.ac.in/department-of-robotics-and-automation/overview-ra/",
+    "downloadUrl": "/downloads/notes-data-structures-algorithms.txt",
+    "description": "Forward & Inverse Kinematics (DH Parameters), Robot Operating System (ROS 2), LiDAR SLAM, and Path Planning.",
+    "units": [
+      {
+        "unit": 1,
+        "title": "Spatial Transformations & Kinematics",
+        "topics": "Rotation matrices, homogeneous transformations, Denavit-Hartenberg (D-H) representation."
+      },
+      {
+        "unit": 2,
+        "title": "Inverse Kinematics & Jacobians",
+        "topics": "Analytical and numerical inverse kinematics, singularity analysis, velocity kinematics."
+      },
+      {
+        "unit": 3,
+        "title": "Robot Dynamics & Control",
+        "topics": "Euler-Lagrange formulation, Newton-Euler algorithm, computed torque control."
+      },
+      {
+        "unit": 4,
+        "title": "Robot Operating System (ROS 2)",
+        "topics": "Nodes, topics, services, actions, URDF modeling, Gazebo simulation environment."
+      },
+      {
+        "unit": 5,
+        "title": "Sensors & Perception",
+        "topics": "LiDAR point clouds, depth cameras, sensor fusion using Extended Kalman Filter (EKF)."
+      },
+      {
+        "unit": 6,
+        "title": "SLAM & Motion Planning",
+        "topics": "Simultaneous Localization and Mapping (Cartographer, Gmapping), A* and RRT* path planning."
+      }
+    ],
+    "textbooks": [
+      "Introduction to Robotics: Mechanics and Control - John J. Craig",
+      "Probabilistic Robotics - Sebastian Thrun, Wolfram Burgard"
+    ],
+    "examPattern": "ISE: 20%, MSE: 30%, ESE: 50%"
+  }
+]

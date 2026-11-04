@@ -1,0 +1,192 @@
+[
+  {
+    "id": "p-1",
+    "company": "Google India",
+    "package": "33.5 LPA",
+    "tier": "Dream",
+    "year": "2024-25",
+    "students": "4",
+    "eligibleBranches": [
+      "CSE",
+      "IT"
+    ],
+    "role": "Software Development Engineer (SDE-1)",
+    "location": "Bengaluru / Hyderabad",
+    "selectionProcess": "Online Coding Challenge (LeetCode Hard), 3 Technical Rounds, 1 Googliness & Leadership round."
+  },
+  {
+    "id": "p-2",
+    "company": "Microsoft",
+    "package": "28.0 LPA",
+    "tier": "Dream",
+    "year": "2024-25",
+    "students": "6",
+    "eligibleBranches": [
+      "CSE",
+      "IT",
+      "ENTC"
+    ],
+    "role": "Software Engineer",
+    "location": "Hyderabad / Noida",
+    "selectionProcess": "Codility OA (3 problems, 90 mins), Technical Interviews (DSA & Systems), AA round."
+  },
+  {
+    "id": "p-3",
+    "company": "NVIDIA",
+    "package": "24.5 LPA",
+    "tier": "Dream",
+    "year": "2024-25",
+    "students": "5",
+    "eligibleBranches": [
+      "CSE",
+      "IT",
+      "ENTC"
+    ],
+    "role": "System Software Engineer / ASIC Engineer",
+    "location": "Pune / Bengaluru",
+    "selectionProcess": "C++ Systems & CUDA test, Architecture round, OS & Kernel internals, Managerial."
+  },
+  {
+    "id": "p-4",
+    "company": "Amazon",
+    "package": "22.0 LPA",
+    "tier": "Dream",
+    "year": "2024-25",
+    "students": "8",
+    "eligibleBranches": [
+      "CSE",
+      "IT"
+    ],
+    "role": "Software Development Engineer",
+    "location": "Bengaluru / Chennai",
+    "selectionProcess": "Online Assessment (DSA + Work Style Simulation), 3 System Coding rounds."
+  },
+  {
+    "id": "p-5",
+    "company": "Siemens Technology",
+    "package": "14.0 LPA",
+    "tier": "Super Core",
+    "year": "2024-25",
+    "students": "18",
+    "eligibleBranches": [
+      "CSE",
+      "IT",
+      "ENTC",
+      "Electrical",
+      "Mechanical"
+    ],
+    "role": "R&D Engineer",
+    "location": "Pune / Bengaluru",
+    "selectionProcess": "Cognitive & Domain Test, 2 Technical Rounds, HR Interview."
+  },
+  {
+    "id": "p-6",
+    "company": "Mercedes-Benz R&D India (MBRDI)",
+    "package": "13.5 LPA",
+    "tier": "Super Core",
+    "year": "2024-25",
+    "students": "14",
+    "eligibleBranches": [
+      "ENTC",
+      "CSE",
+      "Mechanical",
+      "Robotics"
+    ],
+    "role": "Embedded Automotive Software Engineer",
+    "location": "Bengaluru / Pune",
+    "selectionProcess": "Embedded C / CAN / Automotive Architecture test, Technical + HR."
+  },
+  {
+    "id": "p-7",
+    "company": "John Deere India",
+    "package": "12.8 LPA",
+    "tier": "Super Core",
+    "year": "2024-25",
+    "students": "22",
+    "eligibleBranches": [
+      "Mechanical",
+      "Electrical",
+      "CSE",
+      "IT"
+    ],
+    "role": "Product Design & Cloud IoT Engineer",
+    "location": "Pune",
+    "selectionProcess": "Aptitude & Technical MCQ, Group Discussion, Technical Panel, HR."
+  },
+  {
+    "id": "p-8",
+    "company": "Atlas Copco",
+    "package": "11.5 LPA",
+    "tier": "Core",
+    "year": "2024-25",
+    "students": "16",
+    "eligibleBranches": [
+      "Mechanical",
+      "Electrical"
+    ],
+    "role": "Design Engineer",
+    "location": "Pune",
+    "selectionProcess": "Mechanical Core Test, Design Challenge, Interview."
+  },
+  {
+    "id": "p-9",
+    "company": "TCS Digital",
+    "package": "7.5 LPA",
+    "tier": "Differential",
+    "year": "2024-25",
+    "students": "64",
+    "eligibleBranches": [
+      "All Branches"
+    ],
+    "role": "Systems Engineer (Digital)",
+    "location": "Pan India",
+    "selectionProcess": "TCS NQT Advanced Section (Advanced Coding, Quant, Logical), Technical Interview."
+  },
+  {
+    "id": "p-10",
+    "company": "Infosys (Specialist Programmer)",
+    "package": "9.5 LPA",
+    "tier": "Differential",
+    "year": "2024-25",
+    "students": "38",
+    "eligibleBranches": [
+      "CSE",
+      "IT",
+      "ENTC"
+    ],
+    "role": "Specialist Programmer (SP)",
+    "location": "Pune / Bengaluru / Mysuru",
+    "selectionProcess": "HackWithInfy Contest / InfyTQ Advanced DSA Coding."
+  },
+  {
+    "id": "p-11",
+    "company": "Cummins India",
+    "package": "10.2 LPA",
+    "tier": "Core",
+    "year": "2024-25",
+    "students": "19",
+    "eligibleBranches": [
+      "Mechanical",
+      "Electrical"
+    ],
+    "role": "Graduate Engineer Trainee",
+    "location": "Pune / Phaltan",
+    "selectionProcess": "Aptitude, Core Technical Test, Case Study Interview."
+  },
+  {
+    "id": "p-12",
+    "company": "Tata Motors",
+    "package": "9.0 LPA",
+    "tier": "Core",
+    "year": "2024-25",
+    "students": "25",
+    "eligibleBranches": [
+      "Mechanical",
+      "Electrical",
+      "Civil"
+    ],
+    "role": "Graduate Engineer Trainee (EV Division)",
+    "location": "Pune / Sanand",
+    "selectionProcess": "Written Test, Psychometric Test, Technical & HR Round."
+  }
+]
