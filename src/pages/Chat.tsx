@@ -6,6 +6,8 @@ import { apiSendMessage, apiGetChatStatus } from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Plus, Trash2, Loader2, ExternalLink, Clock, Bot } from 'lucide-react';
 import { cn } from '../lib/utils';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function Chat() {
   const { convId } = useParams();
@@ -212,8 +214,10 @@ export default function Chat() {
                           : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
                       )}
                     >
-                      <div className="prose dark:prose-invert text-sm">
-                        {message.content}
+                      <div className="chat-markdown text-sm">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {message.content}
+                        </ReactMarkdown>
                       </div>
                       {message.sources && message.sources.length > 0 && (
                         <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
