@@ -28,6 +28,13 @@ const allowedHosts = new Set([
   'walchandsangli.in',
   'www.walchandsangli.in'
 ]);
+function configuredHosts(): Set<string> {
+  const extraHosts = (process.env.WCE_ALLOWED_HOSTS || '')
+    .split(',')
+    .map(value => value.trim().toLowerCase())
+    .filter(Boolean);
+  return new Set([...allowedHosts, ...extraHosts]);
+}
 const ignoredExtensions = /\.(?:jpg|jpeg|png|gif|svg|webp|css|js|ico|woff2?)(?:\?|$)/i;
 const documentPattern = /\.(pdf|docx?|xlsx?|pptx?|zip)(?:\?|$)/i;
 const requestHeaders = { 'user-agent': 'CampusMind/1.0 (+https://github.com/bhatayush684/Campus)' };
@@ -115,7 +122,7 @@ function extractLinks(html: string, pageUrl: string) {
 export class ScraperService {
   async scrapePage(url: string): Promise<ScrapedData> {
     const parsedUrl = new URL(url);
-    if (parsedUrl.protocol !== 'https:' || !allowedHosts.has(parsedUrl.hostname.toLowerCase())) {
+    if (parsedUrl.protocol !== 'https:' || !configuredHosts().has(parsedUrl.hostname.toLowerCase())) {
       throw new Error('Only the configured Walchand College domains are allowed');
     }
     const html = await requestHtml(parsedUrl);
@@ -133,6 +140,7 @@ export class ScraperService {
     const queue: Array<{ url: string; depth: number }> = [{ url: startUrl, depth: 0 }];
     const visited = new Set<string>();
     const results: ScrapedData[] = [];
+    const hosts = configuredHosts();
     while (queue.length && results.length < maxPages) {
       const current = queue.shift();
       if (!current || visited.has(current.url)) continue;
@@ -143,7 +151,7 @@ export class ScraperService {
         if (current.depth < boundedDepth) {
           for (const link of page.links) {
             const parsed = new URL(link);
-            if (allowedHosts.has(parsed.hostname.toLowerCase()) && !visited.has(link)) {
+            if (parsed.protocol === 'https:' && hosts.has(parsed.hostname.toLowerCase()) && !visited.has(link)) {
               queue.push({ url: link, depth: current.depth + 1 });
             }
           }
@@ -171,9 +179,9 @@ export class ScraperService {
       .split(',')
       .map(value => value.trim())
       .filter(Boolean);
-    const pages: ScrapedData[] = [];
-    for (const root of roots) pages.push(...await this.crawlWebsite(root, Number(process.env.SCRAPE_MAX_DEPTH || 1)));
-    return pages;
+    const depth = Number(process.env.SCRAPE_MAX_DEPTH || 1);
+    const results = await Promise.allSettled(roots.map(root => this.crawlWebsite(root, depth)));
+    return results.flatMap(result => result.status === 'fulfilled' ? result.value : []);
   }
 
   async getAllDownloadableDocuments(): Promise<DownloadableDocument[]> {

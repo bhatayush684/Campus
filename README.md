@@ -148,6 +148,7 @@ the hosting provider in production.
 | `OPENAI_MODEL` | No | `gpt-4o-mini` | OpenAI fallback model |
 | `CORS_ORIGIN` | Production | — | Comma-separated allowed browser origins |
 | `WCE_BASE_URLS` | No | Three supported WCE domains | Scraper roots |
+| `WCE_ALLOWED_HOSTS` | No | Empty | Comma-separated additional HTTPS hostnames to crawl only when explicitly verified as college-related |
 | `SCRAPE_MAX_DEPTH` | No | `1` | Maximum crawl depth |
 | `SCRAPE_MAX_PAGES` | No | `20` | Maximum pages crawled per configured source root |
 | `SMOKE_BASE_URL` | No | `http://localhost:3001` | Base URL used by smoke tests |

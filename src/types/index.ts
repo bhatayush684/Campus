@@ -283,6 +283,7 @@ export interface StudyPlan {
     priority: 'high' | 'medium' | 'low';
     estimatedHours: number;
     completed: boolean;
+    modules?: StudyModule[];
   }>;
   examDate: string;
   createdAt: string;
@@ -299,6 +300,19 @@ export interface StudyPlan {
     pyqs?: PYQ[];
     resources?: StudyResource[];
   };
+}
+
+export type KnowledgeLevel = 1 | 2 | 3 | 4 | 5;
+
+export interface StudyModule {
+  id: string;
+  title: string;
+  topics: string;
+  estimatedHours: number;
+  knowledge: KnowledgeLevel;
+  completed: boolean;
+  lastReviewedAt?: string;
+  nextAction: 'learn' | 'practice' | 'revise' | 'test';
 }
 
 export interface PYQ {

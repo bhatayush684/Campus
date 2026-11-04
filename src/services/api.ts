@@ -4,7 +4,7 @@
  * backend handles AI requests and future persistence.
  */
 
-import { User, Conversation, Message, TimetableEntry, Notice, KnowledgeDocument, AnalyticsData, EvalMetric, RAGSettings, ScrapedSyllabus, ScrapedExamSchedule, StudyPlan, GeneratedNotes, NotesGenerationMode, StudyResource } from '../types';
+import { User, Conversation, Message, TimetableEntry, Notice, KnowledgeDocument, AnalyticsData, EvalMetric, RAGSettings, ScrapedSyllabus, ScrapedExamSchedule, StudyPlan, GeneratedNotes, NotesGenerationMode, StudyResource, StudyModule, KnowledgeLevel } from '../types';
 import { PYQS } from '../data/pyqs';
 import { mockUsers } from '../mock/users';
 import { mockTimetable } from '../mock/timetable';
@@ -425,6 +425,15 @@ export async function apiGenerateStudyPlan(userId: string, department: string, e
         priority: (i < 2 ? 'high' : i < 4 ? 'medium' : 'low') as 'high' | 'medium' | 'low',
         estimatedHours: Math.max(4, Math.min(28, Math.round(((s.credits || 3) * 4 + (s.units?.length || 5) * 1.5) * 2) / 2)),
         completed: false,
+        modules: (s.units || []).map((unit): StudyModule => ({
+          id: `${s.id}-unit-${unit.unit}`,
+          title: `Unit ${unit.unit}: ${unit.title}`,
+          topics: unit.topics,
+          estimatedHours: Math.max(1, Math.round(((((s.credits || 3) * 4) / Math.max(1, s.units?.length || 1)) + (unit.topics.split(',').length * 0.5)) * 2) / 2),
+          knowledge: 1 as KnowledgeLevel,
+          completed: false,
+          nextAction: 'learn',
+        })),
       })),
     examDate,
     createdAt: new Date().toISOString(),

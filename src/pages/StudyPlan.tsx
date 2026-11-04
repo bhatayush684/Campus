@@ -4,14 +4,15 @@ import { Calendar, BookOpen, Clock, CheckCircle, Circle, Sparkles, Target, Trend
 import { cn } from '../lib/utils';
 import { apiGenerateStudyPlan } from '../services/api';
 import { useAuthStore } from '../store/authStore';
-import { StudyPlan as StudyPlanData } from '../types';
+import { KnowledgeLevel, StudyModule, StudyPlan as StudyPlanData } from '../types';
 import { toast } from 'sonner';
 
 const DEPARTMENTS = ['CSE', 'IT', 'ENTC', 'Civil', 'Mechanical', 'Electrical', 'AI/ML', 'Robotics', 'General'];
 
-function SubjectCard({ subject, onToggle, index }: {
+function SubjectCard({ subject, onToggle, onModuleChange, index }: {
   subject: StudyPlanData['subjects'][number];
   onToggle: () => void;
+  onModuleChange: (module: StudyModule) => void;
   index: number;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -79,19 +80,85 @@ function SubjectCard({ subject, onToggle, index }: {
               Show less
             </button>
           )}
+          {subject.modules && subject.modules.length > 0 && (
+            <div className="mt-4 space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3">
+              <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">Module mastery</p>
+              {subject.modules.map(module => (
+                <ModuleCard key={module.id} module={module} onChange={onModuleChange} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </motion.div>
   );
 }
 
+function ModuleCard({ module, onChange }: { module: StudyModule; onChange: (module: StudyModule) => void }) {
+  const labels = ['Needs introduction', 'Basic familiarity', 'Developing', 'Strong', 'Exam ready'];
+  const actions: Record<StudyModule['nextAction'], string> = {
+    learn: 'Learn concepts',
+    practice: 'Solve guided problems',
+    revise: 'Revise from memory',
+    test: 'Take a timed test',
+  };
+  return (
+    <div className="rounded-lg bg-slate-50 dark:bg-slate-800/60 p-3">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-medium text-slate-800 dark:text-slate-200">{module.title}</p>
+          <p className="text-[10px] text-slate-400 mt-0.5">{module.topics}</p>
+        </div>
+        <span className="text-[10px] text-primary-500 whitespace-nowrap">{actions[module.nextAction]}</span>
+      </div>
+      <div className="mt-2 flex items-center gap-1">
+        <span className="text-[10px] text-slate-400 mr-1">I know this:</span>
+        {[1, 2, 3, 4, 5].map(level => (
+          <button
+            key={level}
+            type="button"
+            aria-label={`${module.title}: ${labels[level - 1]}`}
+            onClick={() => onChange({ ...module, knowledge: level as KnowledgeLevel, completed: level === 5, lastReviewedAt: new Date().toISOString() })}
+            className={cn(
+              'w-6 h-6 rounded-full text-[10px] border transition-colors',
+              level <= module.knowledge ? 'bg-primary-500 text-white border-primary-500' : 'border-slate-300 dark:border-slate-600 text-slate-400'
+            )}
+          >
+            {level}
+          </button>
+        ))}
+        <span className="text-[10px] text-slate-400 ml-1">{labels[module.knowledge - 1]}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function StudyPlan() {
   const { user } = useAuthStore();
+  const storageKey = `campus-mind-study-plan-${user?.id || 'guest'}`;
   const [generating, setGenerating] = useState(false);
   const [studyPlan, setStudyPlan] = useState<StudyPlanData | null>(() => {
     try {
-      const stored = localStorage.getItem('campus-mind-study-plan');
-      return stored ? JSON.parse(stored) : null;
+      const stored = localStorage.getItem(storageKey) || localStorage.getItem('campus-mind-study-plan');
+      if (!stored) return null;
+      const parsed = JSON.parse(stored) as StudyPlanData;
+      return {
+        ...parsed,
+        subjects: parsed.subjects.map(subject => ({
+          ...subject,
+          modules: subject.modules || subject.chapters
+            .filter(chapter => /^Unit \d+:/i.test(chapter))
+            .map((chapter, index) => ({
+              id: `${parsed.id}-${index}`,
+              title: chapter,
+              topics: '',
+              estimatedHours: Math.max(1, Math.round(subject.estimatedHours / Math.max(1, subject.chapters.length))),
+              knowledge: 1 as KnowledgeLevel,
+              completed: false,
+              nextAction: 'learn' as const,
+            })),
+        })),
+      };
     } catch { return null; }
   });
   const [department, setDepartment] = useState('CSE');
@@ -101,11 +168,14 @@ export default function StudyPlan() {
 
   useEffect(() => {
     if (studyPlan) {
-      localStorage.setItem('campus-mind-study-plan', JSON.stringify(studyPlan));
-      const completed = studyPlan.subjects.filter(s => s.completed).length;
-      setProgress(studyPlan.subjects.length ? (completed / studyPlan.subjects.length) * 100 : 0);
+      localStorage.setItem(storageKey, JSON.stringify(studyPlan));
+      const modules = studyPlan.subjects.flatMap(s => s.modules || []);
+      const completed = modules.length
+        ? modules.reduce((sum, module) => sum + module.knowledge, 0) / (modules.length * 5) * 100
+        : studyPlan.subjects.filter(s => s.completed).length / Math.max(1, studyPlan.subjects.length) * 100;
+      setProgress(completed);
     }
-  }, [studyPlan]);
+  }, [studyPlan, storageKey]);
 
   const handleGenerate = async () => {
     if (!examDate) {
@@ -141,12 +211,40 @@ export default function StudyPlan() {
     setProgress((completed / updated.subjects.length) * 100);
   };
 
+  const updateModule = (subjectIndex: number, moduleId: string, nextModule: StudyModule) => {
+    if (!studyPlan) return;
+    const subjects = studyPlan.subjects.map((subject, index) => {
+      if (index !== subjectIndex) return subject;
+      const modules = (subject.modules || []).map(module => {
+        if (module.id !== moduleId) return module;
+        const nextAction: StudyModule['nextAction'] = nextModule.knowledge <= 2
+          ? 'learn'
+          : nextModule.knowledge === 3 ? 'practice'
+            : nextModule.knowledge === 4 ? 'revise' : 'test';
+        return { ...nextModule, nextAction };
+      });
+      return { ...subject, modules, completed: modules.length > 0 && modules.every(module => module.knowledge === 5) };
+    });
+    setStudyPlan({ ...studyPlan, subjects, updatedAt: new Date().toISOString() });
+    toast.success('Module mastery updated. Your next step has been recalculated.');
+  };
+
+  const nextModule = studyPlan?.subjects
+    .flatMap((subject, subjectIndex) => (subject.modules || []).map(module => ({ subject, subjectIndex, module })))
+    .filter(item => !item.module.completed)
+    .sort((a, b) => a.module.knowledge - b.module.knowledge || b.module.estimatedHours - a.module.estimatedHours)[0];
+
   const totalHours = studyPlan?.subjects.reduce((sum, subject) => sum + subject.estimatedHours, 0) || 0;
-  const completedHours = studyPlan?.subjects.reduce((sum, subject) => subject.completed ? sum + subject.estimatedHours : sum, 0) || 0;
+  const completedHours = studyPlan?.subjects.reduce((sum, subject) => {
+    if (subject.modules?.length) {
+      return sum + subject.modules.reduce((moduleSum, module) => moduleSum + module.estimatedHours * (module.knowledge / 5), 0);
+    }
+    return subject.completed ? sum + subject.estimatedHours : sum;
+  }, 0) || 0;
   const daysAvailable = useMemo(() => studyPlan?.metadata?.daysAvailable
     || (studyPlan ? Math.max(1, Math.ceil((new Date(`${studyPlan.examDate}T00:00:00`).getTime() - new Date(`${today}T00:00:00`).getTime()) / 86400000)) : 1), [studyPlan, today]);
   const dailyTarget = Math.ceil((totalHours / daysAvailable) * 10) / 10;
-  const remainingHours = Math.max(0, totalHours - completedHours);
+  const remainingHours = Math.max(0, Math.round((totalHours - completedHours) * 10) / 10);
   const examDateLabel = useMemo(
     () => studyPlan ? new Date(`${studyPlan.examDate}T00:00:00`).toLocaleDateString('en-IN') : '',
     [studyPlan]
@@ -263,7 +361,7 @@ export default function StudyPlan() {
                   Complete about {dailyTarget} hours per day
                 </h2>
                 <p className="text-sm text-emerald-100 mt-1">
-                  {remainingHours} hours remain across {daysAvailable} day{daysAvailable === 1 ? '' : 's'} before your planning deadline.
+                  {nextModule ? `Next: ${nextModule.module.title} — ${nextModule.module.nextAction}. ` : ''}{remainingHours} hours remain across {daysAvailable} day{daysAvailable === 1 ? '' : 's'} before your planning deadline.
                 </p>
               </div>
               <div className="flex items-center gap-2 text-sm bg-white/15 rounded-xl px-4 py-3">
@@ -411,6 +509,7 @@ export default function StudyPlan() {
                 key={index}
                 subject={subject}
                 onToggle={() => toggleSubject(index)}
+                onModuleChange={module => updateModule(index, module.id, module)}
                 index={index}
               />
             ))}
