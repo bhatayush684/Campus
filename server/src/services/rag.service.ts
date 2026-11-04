@@ -2,6 +2,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 
 type Doc = { id: string; title: string; category: string; date?: string; url?: string; content: string };
+const defaultGoogleModel = 'gemini-3.8-flash';
 const terms = (s: string) => s.toLowerCase().match(/[\p{L}\p{N}]+/gu)?.filter(x => x.length > 2 && !'the and for are was with from about what when where who how does this that'.split(' ').includes(x)) ?? [];
 const dataPath = path.resolve(process.cwd(), '../public/scraped');
 const notesPath = path.resolve(process.cwd(), '../public/downloads');
@@ -17,11 +18,12 @@ function excerpt(content:string,q:string){const qterms=terms(q); return content.
 async function generateAnswer(query:string,hits:ReturnType<typeof retrieve>):Promise<string|null>{
   const apiKey = process.env.GOOGLE_AI_API_KEY;
   if (!apiKey || apiKey === 'your_google_ai_api_key_here') return null;
+  const model = process.env.GOOGLE_AI_MODEL || defaultGoogleModel;
 
   const context = hits.map((h,i)=>`[${i+1}] ${h.title} (${h.category}; date ${h.date||'not supplied'})\n${h.content.slice(0,4000)}`).join('\n\n');
 
   try {
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-3.8-flash:generateContent?key=${apiKey}`,{
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`,{
       method:'POST',
       headers:{'content-type':'application/json'},
       signal:AbortSignal.timeout(90000),
@@ -44,11 +46,36 @@ ${context}`
     }
     const data = await r.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
     const answer = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
-    console.log('Google AI response:', answer ? 'Success' : 'No content');
     return answer;
   } catch (error) {
     console.error('Google AI fetch error:', error);
     return null;
   }
 }
-export async function answerFromKnowledgeBase(query:string){const hits=retrieve(query,await corpus());if(!hits.length)return{content:'I could not find a relevant answer in the local scraped data or study notes. Try a specific course, department, notice, or topic.',sources:[],model:'local-retrieval',grounded:true};const answer=await generateAnswer(query,hits);const content=answer||`## Relevant information\n\n${hits.slice(0,3).map((h,i)=>`### ${i+1}. ${h.title}\n${excerpt(h.content,query)}`).join('\n\n')}\n\n*Showing retrieved local notes. Configure Google AI API key for synthesized answers.*`;const max=hits[0].score;return{content,sources:hits.map(h=>({id:h.id,title:h.title,page:1,excerpt:excerpt(h.content,query),category:h.category,date:h.date||null,relevance:Math.round(h.score/max*100),url:h.url||null})),model:answer?'gemini-3.8-flash':'local-retrieval',grounded:true};}
+export async function answerFromKnowledgeBase(query:string){
+  const hits=retrieve(query,await corpus());
+  if(!hits.length)return{
+    content:'I could not find a relevant answer in the local scraped data or study notes. Try a specific course, department, notice, or topic.',
+    sources:[],
+    model:'local-retrieval',
+    grounded:true
+  };
+  const answer=await generateAnswer(query,hits);
+  const content=answer||`## Relevant information\n\n${hits.slice(0,3).map((h,i)=>`### ${i+1}. ${h.title}\n${excerpt(h.content,query)}`).join('\n\n')}\n\n*Showing retrieved local notes. Configure Google AI API key for synthesized answers.*`;
+  const max=hits[0].score;
+  return{
+    content,
+    sources:hits.map(h=>({
+      id:h.id,
+      title:h.title,
+      page:1,
+      excerpt:excerpt(h.content,query),
+      category:h.category,
+      date:h.date||null,
+      relevance:Math.round(h.score/max*100),
+      url:h.url||null
+    })),
+    model:answer?(process.env.GOOGLE_AI_MODEL || defaultGoogleModel):'local-retrieval',
+    grounded:true
+  };
+}
