@@ -42,3 +42,26 @@ npm run build
 The chat service retrieves relevant local content first and asks Gemini to
 synthesize a cited answer. If Gemini is temporarily unavailable, it returns
 the retrieved local excerpts instead.
+
+## Deployment with Docker
+
+Docker and Docker Compose are required on the deployment host. Set the API
+key in the host environment; do not commit it:
+
+```powershell
+$env:GOOGLE_AI_API_KEY = "your-key"
+docker compose up --build -d
+```
+
+The web application is then available at `http://localhost` (or the port
+selected with `WEB_PORT`). Nginx serves the SPA and proxies `/api` and
+`/health` to the API container. Check deployment health with:
+
+```powershell
+curl http://localhost/health
+npm run smoke
+```
+
+For a non-Docker host, run `npm run build` in the root package and
+`npm run build && npm start` in `server`; place the generated `dist` behind
+an HTTPS reverse proxy that forwards `/api` and `/health` to port 3001.

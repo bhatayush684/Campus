@@ -19,9 +19,9 @@ router.post('/message', async (req, res) => {
 
 router.get('/status', async (_req, res) => {
   const apiKey = process.env.GOOGLE_AI_API_KEY;
-  const googleModel = process.env.GOOGLE_AI_MODEL || 'gemini-3.8-flash';
+  const googleModel = (process.env.GOOGLE_AI_MODEL || 'gemini-3.8-flash').split(',')[0].trim();
   if (apiKey && apiKey !== 'your_google_ai_api_key_here') {
-    res.json({ ready: true, provider: 'google-gemini', model: googleModel, models: [googleModel] });
+    res.json({ ready: true, provider: 'google-gemini', model: googleModel, models: [googleModel], fallback: 'local-retrieval' });
   } else {
     const ollamaUrl = process.env.OLLAMA_URL || 'http://127.0.0.1:11434';
     try {

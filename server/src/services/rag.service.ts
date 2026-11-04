@@ -3,6 +3,7 @@ import path from 'node:path';
 
 type Doc = { id: string; title: string; category: string; date?: string; url?: string; content: string };
 const defaultGoogleModel = 'gemini-3.8-flash';
+const transientProviderStatuses = new Set([429, 500, 502, 503, 504]);
 const terms = (s: string) => s.toLowerCase().match(/[\p{L}\p{N}]+/gu)?.filter(x => x.length > 2 && !'the and for are was with from about what when where who how does this that'.split(' ').includes(x)) ?? [];
 const dataPath = path.resolve(process.cwd(), '../public/scraped');
 const notesPath = path.resolve(process.cwd(), '../public/downloads');
@@ -18,39 +19,49 @@ function excerpt(content:string,q:string){const qterms=terms(q); return content.
 async function generateAnswer(query:string,hits:ReturnType<typeof retrieve>):Promise<string|null>{
   const apiKey = process.env.GOOGLE_AI_API_KEY;
   if (!apiKey || apiKey === 'your_google_ai_api_key_here') return null;
-  const model = process.env.GOOGLE_AI_MODEL || defaultGoogleModel;
+  const models = (process.env.GOOGLE_AI_MODEL || defaultGoogleModel)
+    .split(',')
+    .map(model => model.trim())
+    .filter(Boolean);
 
   const context = hits.map((h,i)=>`[${i+1}] ${h.title} (${h.category}; date ${h.date||'not supplied'})\n${h.content.slice(0,4000)}`).join('\n\n');
 
-  try {
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`,{
-      method:'POST',
-      headers:{'content-type':'application/json'},
-      signal:AbortSignal.timeout(90000),
-      body:JSON.stringify({
-        contents:[{
-          parts:[{
-            text:`You are a helpful college study assistant for Walchand College of Engineering. Answer the user's question using ONLY the provided context below. Write clear organized notes using useful headings, bullets, steps or tables. Cite claims as [1], [2]. State what is missing. Never invent facts or dates.
+  for (const model of models) {
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`,{
+          method:'POST',
+          headers:{'content-type':'application/json'},
+          signal:AbortSignal.timeout(30000),
+          body:JSON.stringify({
+            contents:[{
+              parts:[{
+                text:`You are a helpful college study assistant for Walchand College of Engineering. Answer the user's question using ONLY the provided context below. Write clear organized notes using useful headings, bullets, steps or tables. Cite claims as [1], [2]. State what is missing. Never invent facts or dates.
 
 Question: ${query}
 
 Context:
 ${context}`
-          }]
-        }]
-      })
-    });
-    if(!r.ok) {
-      console.error('Google AI API error:', r.status, await r.text());
-      return null;
+              }]
+            }]
+          })
+        });
+        if (r.ok) {
+          const data = await r.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
+          return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
+        }
+
+        const details = (await r.text()).slice(0, 500);
+        console.error(`Google AI API error (${model}, attempt ${attempt + 1}):`, r.status, details);
+        if (!transientProviderStatuses.has(r.status)) break;
+        if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 750));
+      } catch (error) {
+        console.error(`Google AI request failed (${model}, attempt ${attempt + 1}):`, error);
+        if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 750));
+      }
     }
-    const data = await r.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
-    const answer = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
-    return answer;
-  } catch (error) {
-    console.error('Google AI fetch error:', error);
-    return null;
   }
+  return null;
 }
 export async function answerFromKnowledgeBase(query:string){
   const hits=retrieve(query,await corpus());
@@ -75,7 +86,7 @@ export async function answerFromKnowledgeBase(query:string){
       relevance:Math.round(h.score/max*100),
       url:h.url||null
     })),
-    model:answer?(process.env.GOOGLE_AI_MODEL || defaultGoogleModel):'local-retrieval',
+    model:answer?(process.env.GOOGLE_AI_MODEL || defaultGoogleModel).split(',')[0].trim():'local-retrieval',
     grounded:true
   };
 }
