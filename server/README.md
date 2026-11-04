@@ -4,7 +4,8 @@
 
 1. Copy `env.example` to `.env`.
 2. Set `GOOGLE_AI_API_KEY` to a Google AI Studio API key.
-3. Optionally set `GOOGLE_AI_MODEL`; the default is `gemini-3.8-flash`.
+3. Optionally set `GOOGLE_AI_MODEL`; the default is
+   `gemini-3-flash-preview,gemini-3.1-flash-lite`.
 4. Run `npm install` and `npm run dev` from this directory.
 
 The API listens on `http://localhost:3001`. The Vite development server proxies

@@ -15,7 +15,8 @@ npm install
 ```
 
 Configure the backend by copying `server/env.example` to `server/.env` and
-setting `GOOGLE_AI_API_KEY`. Keep `server/.env` local; it is ignored by Git.
+setting `GOOGLE_AI_API_KEY`. Keep `server/.env` local; it is ignored by Git. The
+default model chain is `gemini-3-flash-preview,gemini-3.1-flash-lite`.
 
 Run the API and frontend in separate terminals:
 

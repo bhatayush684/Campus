@@ -2,7 +2,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 
 type Doc = { id: string; title: string; category: string; date?: string; url?: string; content: string };
-const defaultGoogleModel = 'gemini-3.8-flash';
+const defaultGoogleModel = 'gemini-3-flash-preview,gemini-3.1-flash-lite';
 const transientProviderStatuses = new Set([429, 500, 502, 503, 504]);
 const terms = (s: string) => s.toLowerCase().match(/[\p{L}\p{N}]+/gu)?.filter(x => x.length > 2 && !'the and for are was with from about what when where who how does this that'.split(' ').includes(x)) ?? [];
 const dataPath = path.resolve(process.cwd(), '../public/scraped');
