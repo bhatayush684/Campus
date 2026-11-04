@@ -16,10 +16,26 @@ const frontendDirectory = path.resolve(serverDirectory, '../../dist');
 
 // Middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    const configuredOrigins = (process.env.CORS_ORIGIN || '')
+      .split(',')
+      .map(value => value.trim())
+      .filter(Boolean);
+    if (!origin || configuredOrigins.length === 0 || configuredOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Origin is not allowed by CORS'));
+  },
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
+
+app.use((err: unknown, _req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (err instanceof SyntaxError && 'body' in err) {
+    return res.status(400).json({ error: 'Invalid JSON request body' });
+  }
+  return next(err);
+});
 
 // Health check
 app.get('/health', (req, res) => {
