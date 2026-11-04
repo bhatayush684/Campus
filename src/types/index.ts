@@ -332,6 +332,28 @@ export interface StudyResource {
   description: string;
 }
 
+export interface PracticeQuestion {
+  id: string;
+  question: string;
+  subject: string;
+  module?: string;
+  type: PYQ['type'];
+  marks: number;
+  source: 'pyq-reference' | 'syllabus-practice';
+  year?: string;
+  answerHint: string;
+}
+
+export interface PracticeSet {
+  id: string;
+  title: string;
+  scope: 'module' | 'course';
+  subject: string;
+  module?: string;
+  questions: PracticeQuestion[];
+  createdAt: string;
+}
+
 export type NotesGenerationMode = 'course' | 'module' | 'topic';
 
 export interface GeneratedNotes {

@@ -4,7 +4,8 @@ import { Calendar, BookOpen, Clock, CheckCircle, Circle, Sparkles, Target, Trend
 import { cn } from '../lib/utils';
 import { apiGenerateStudyPlan } from '../services/api';
 import { useAuthStore } from '../store/authStore';
-import { KnowledgeLevel, StudyModule, StudyPlan as StudyPlanData } from '../types';
+import { KnowledgeLevel, PracticeSet, StudyModule, StudyPlan as StudyPlanData } from '../types';
+import { apiGeneratePracticeSet } from '../services/api';
 import { toast } from 'sonner';
 
 const DEPARTMENTS = ['CSE', 'IT', 'ENTC', 'Civil', 'Mechanical', 'Electrical', 'AI/ML', 'Robotics', 'General'];
@@ -165,6 +166,11 @@ export default function StudyPlan() {
   const [examDate, setExamDate] = useState('');
   const [progress, setProgress] = useState(0);
   const [today] = useState(() => new Date().toISOString().slice(0, 10));
+  const [practiceScope, setPracticeScope] = useState<'module' | 'course'>('course');
+  const [practiceSubject, setPracticeSubject] = useState('');
+  const [practiceModule, setPracticeModule] = useState('');
+  const [practiceCount, setPracticeCount] = useState(20);
+  const [practiceSet, setPracticeSet] = useState<PracticeSet | null>(null);
 
   useEffect(() => {
     if (studyPlan) {
@@ -233,6 +239,21 @@ export default function StudyPlan() {
     .flatMap((subject, subjectIndex) => (subject.modules || []).map(module => ({ subject, subjectIndex, module })))
     .filter(item => !item.module.completed)
     .sort((a, b) => a.module.knowledge - b.module.knowledge || b.module.estimatedHours - a.module.estimatedHours)[0];
+  const practiceSubjectData = studyPlan?.subjects.find(subject => subject.name === practiceSubject) || studyPlan?.subjects[0];
+  const practiceModules = practiceSubjectData?.modules || [];
+
+  const generatePracticeSet = () => {
+    if (!practiceSubjectData) return;
+    const generated = apiGeneratePracticeSet(
+      practiceSubjectData.name,
+      practiceModules,
+      practiceCount,
+      practiceScope,
+      practiceScope === 'module' ? practiceModule : undefined
+    );
+    setPracticeSet(generated);
+    toast.success(`${generated.questions.length} practice questions generated.`);
+  };
 
   const totalHours = studyPlan?.subjects.reduce((sum, subject) => sum + subject.estimatedHours, 0) || 0;
   const completedHours = studyPlan?.subjects.reduce((sum, subject) => {
@@ -385,6 +406,55 @@ export default function StudyPlan() {
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2"><BrainCircuit className="w-4 h-4 text-purple-500" /> PYQ priority set</h3>
                 <span className="badge text-[10px] bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300">{studyPlan.metadata?.pyqs?.length || 0} questions</span>
+              </div>
+              <div className="card p-5 mb-6">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <div>
+                    <h3 className="font-semibold text-slate-900 dark:text-white">Knowledge check</h3>
+                    <p className="text-xs text-slate-400 mt-1">Generate 10–100 questions from PYQ references and syllabus modules.</p>
+                  </div>
+                  <span className="badge text-[10px] bg-primary-100 text-primary-700 dark:bg-primary-950/40 dark:text-primary-300">PYQ + syllabus</span>
+                </div>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <select aria-label="Practice scope" value={practiceScope} onChange={event => setPracticeScope(event.target.value as 'module' | 'course')} className="input">
+                    <option value="course">Complete course</option>
+                    <option value="module">One module</option>
+                  </select>
+                  <select aria-label="Practice subject" value={practiceSubject || practiceSubjectData?.name || ''} onChange={event => setPracticeSubject(event.target.value)} className="input">
+                    {studyPlan.subjects.map(subject => <option key={subject.name}>{subject.name}</option>)}
+                  </select>
+                  {practiceScope === 'module' ? (
+                    <select aria-label="Practice module" value={practiceModule || practiceModules[0]?.title || ''} onChange={event => setPracticeModule(event.target.value)} className="input">
+                      {practiceModules.map(module => <option key={module.id}>{module.title}</option>)}
+                    </select>
+                  ) : <div className="input text-slate-500">All tracked modules</div>}
+                  <div className="flex gap-2">
+                    <input aria-label="Question count" type="number" min={10} max={100} step={5} value={practiceCount} onChange={event => setPracticeCount(Math.max(10, Math.min(100, Number(event.target.value) || 10)))} className="input w-24" />
+                    <button type="button" onClick={generatePracticeSet} className="btn-primary flex-1 justify-center">Generate</button>
+                  </div>
+                </div>
+                {practiceSet && (
+                  <div className="mt-4 border-t border-slate-100 dark:border-slate-800 pt-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{practiceSet.title} · {practiceSet.questions.length} questions</p>
+                      <button type="button" onClick={() => setPracticeSet(null)} className="text-xs text-slate-400 hover:text-primary-500">Clear</button>
+                    </div>
+                    <div className="max-h-[34rem] overflow-auto space-y-2 pr-1">
+                      {practiceSet.questions.map((question, index) => (
+                        <details key={question.id} className="rounded-lg bg-slate-50 dark:bg-slate-800/60 p-3">
+                          <summary className="cursor-pointer text-xs text-slate-700 dark:text-slate-300">
+                            <span className="font-semibold mr-2">{index + 1}.</span>{question.question}
+                          </summary>
+                          <div className="mt-2 text-[10px] text-slate-400 flex flex-wrap gap-2">
+                            <span>{question.marks} marks</span><span>{question.type}</span><span>{question.module || 'Mixed'}</span>
+                            <span>{question.source === 'pyq-reference' ? `PYQ reference${question.year ? ` · ${question.year}` : ''}` : 'Syllabus practice'}</span>
+                          </div>
+                          <p className="mt-2 text-xs text-primary-600 dark:text-primary-300"><b>Answer checklist:</b> {question.answerHint}</p>
+                        </details>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="space-y-2">
                 {(studyPlan.metadata?.pyqs || []).slice(0, 4).map(pyq => (

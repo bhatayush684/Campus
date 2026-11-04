@@ -4,7 +4,7 @@
  * backend handles AI requests and future persistence.
  */
 
-import { User, Conversation, Message, TimetableEntry, Notice, KnowledgeDocument, AnalyticsData, EvalMetric, RAGSettings, ScrapedSyllabus, ScrapedExamSchedule, StudyPlan, GeneratedNotes, NotesGenerationMode, StudyResource, StudyModule, KnowledgeLevel } from '../types';
+import { User, Conversation, Message, TimetableEntry, Notice, KnowledgeDocument, AnalyticsData, EvalMetric, RAGSettings, ScrapedSyllabus, ScrapedExamSchedule, StudyPlan, GeneratedNotes, NotesGenerationMode, StudyResource, StudyModule, KnowledgeLevel, PracticeQuestion, PracticeSet } from '../types';
 import { PYQS } from '../data/pyqs';
 import { mockUsers } from '../mock/users';
 import { mockTimetable } from '../mock/timetable';
@@ -404,6 +404,7 @@ export async function apiGenerateStudyPlan(userId: string, department: string, e
   if (!examDate || Number.isNaN(exam.getTime()) || exam < today()) {
     throw new Error('Choose an exam date today or later. Past dates cannot produce a useful study plan.');
   }
+
   await delay(rand(500, 900));
   const subjects = scrapedSyllabus.filter(s => s.department === department);
   const selected = (subjects.length ? subjects : scrapedSyllabus).slice(0, 8);
@@ -457,6 +458,63 @@ export async function apiGenerateStudyPlan(userId: string, department: string, e
     ]).filter(resource => Boolean(resource.url)) as StudyResource[]
   };
   return plan;
+}
+
+export function apiGeneratePracticeSet(
+  subject: string,
+  modules: StudyModule[],
+  count: number,
+  scope: 'module' | 'course',
+  selectedModule?: string
+): PracticeSet {
+  const safeCount = Math.max(10, Math.min(100, Math.round(count)));
+  const syllabus = syllabusFor(subject);
+  const eligibleModules = scope === 'module' ? modules.filter(module => module.title === selectedModule) : modules;
+  const modulePool = eligibleModules.length ? eligibleModules : modules;
+  const references = PYQS.filter(pyq => subjectMatches(pyq.subject, subject)
+    && (scope === 'course' || !selectedModule || pyq.unit === selectedModule?.split(':')[0]));
+  const questions: PracticeQuestion[] = references.map(pyq => ({
+    id: `pyq-${pyq.id}`,
+    question: pyq.question,
+    subject,
+    module: pyq.unit,
+    type: pyq.type,
+    marks: pyq.marks,
+    source: 'pyq-reference',
+    year: pyq.year,
+    answerHint: 'Write the definition, show the working or derivation, and verify the final result with a short interpretation.',
+  }));
+  const templates = [
+    (module: StudyModule) => `Explain ${module.title} using a definition, labelled diagram or flow, core steps, and one practical example.`,
+    (module: StudyModule) => `Compare the important approaches in ${module.title}. State when each approach should be preferred and justify your choice.`,
+    (module: StudyModule) => `Solve an exam-style problem from ${module.title}. Show assumptions, intermediate steps, units or complexity, and the final conclusion.`,
+    (module: StudyModule) => `Design a short experiment or implementation for ${module.title}. Include inputs, procedure, expected output, and two failure cases.`,
+    (module: StudyModule) => `Write a 10-mark answer on ${module.title} covering concepts, algorithm or mechanism, advantages, limitations, and applications.`,
+  ];
+  let index = 0;
+  while (questions.length < safeCount && modulePool.length > 0) {
+    const module = modulePool[index % modulePool.length];
+    questions.push({
+      id: `practice-${subject}-${module.id}-${index}`,
+      question: templates[index % templates.length](module),
+      subject,
+      module: module.title,
+      type: index % 3 === 0 ? 'theory' : index % 3 === 1 ? 'numerical' : 'programming',
+      marks: index % 3 === 0 ? 5 : 10,
+      source: 'syllabus-practice',
+      answerHint: `Use these syllabus topics as your checklist: ${module.topics || syllabus?.description || 'definition, mechanism, example, limitations, and exam conclusion'}.`,
+    });
+    index += 1;
+  }
+  return {
+    id: `practice-set-${Date.now()}`,
+    title: `${scope === 'course' ? 'Complete course' : selectedModule || 'Module'} practice set`,
+    scope,
+    subject,
+    module: selectedModule,
+    questions: questions.slice(0, safeCount),
+    createdAt: new Date().toISOString(),
+  };
 }
 
 /**
