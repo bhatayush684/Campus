@@ -21,6 +21,36 @@ import scrapedDepartments from '../data/scraped/departments.json';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+const today = () => new Date(new Date().toISOString().slice(0, 10));
+const formatDate = (value: string) => new Date(`${value}T00:00:00`).toLocaleDateString(undefined, { dateStyle: 'medium' });
+const daysBetween = (from: Date, to: Date) => Math.max(1, Math.ceil((to.getTime() - from.getTime()) / 86400000));
+
+function subjectMatches(title: string, subject: string) {
+  const normalize = (value: string) => value.toLowerCase().replace(/database management systems/g, 'dbms');
+  return normalize(title).includes(normalize(subject)) || normalize(subject).includes(normalize(title));
+}
+
+function syllabusFor(subject: string) {
+  return scrapedSyllabus.find(item => subjectMatches(item.title, subject))
+    || scrapedSyllabus.find(item => item.title.toLowerCase().split(/\s+/).some(word => word.length > 3 && subject.toLowerCase().includes(word)))
+    || null;
+}
+
+function currentExamReference(subject: string, department?: string, requestedDate?: string) {
+  const now = today();
+  const candidates = (scrapedExamSchedules as ScrapedExamSchedule[])
+    .filter(exam => (!department || !exam.department || exam.department === department)
+      && (!subject || !exam.subject || subjectMatches(exam.subject, subject)))
+    .filter(exam => Number.isFinite(Date.parse(exam.date)) && new Date(exam.date) >= now)
+    .sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+  const requested = requestedDate ? new Date(`${requestedDate}T00:00:00`) : null;
+  return {
+    official: candidates[0] || null,
+    requested,
+    isPast: Boolean(requested && requested < now),
+    checkedOn: now.toISOString().slice(0, 10),
+  };
+}
 
 // ─── AUTH ───────────────────────────────────────────────────────────────────
 
@@ -296,26 +326,47 @@ export async function apiGetDepartments(): Promise<any[]> {
  * Real API: POST /api/study-plans/generate { userId, department, examDate }
  */
 export async function apiGenerateStudyPlan(userId: string, department: string, examDate: string): Promise<StudyPlan> {
-  await delay(rand(1000, 2000));
+  const exam = new Date(`${examDate}T00:00:00`);
+  if (!examDate || Number.isNaN(exam.getTime()) || exam < today()) {
+    throw new Error('Choose an exam date today or later. Past dates cannot produce a useful study plan.');
+  }
+  await delay(rand(500, 900));
+  const subjects = scrapedSyllabus.filter(s => s.department === department);
+  const selected = (subjects.length ? subjects : scrapedSyllabus).slice(0, 8);
+  const daysAvailable = daysBetween(today(), exam);
+  const officialExam = (scrapedExamSchedules as ScrapedExamSchedule[])
+    .filter(item => item.department === department && Date.parse(item.date) >= today().getTime())
+    .sort((a, b) => Date.parse(a.date) - Date.parse(b.date))[0];
   const plan: StudyPlan = {
     id: `sp_${Date.now()}`,
     userId,
-    title: `${department} Study Plan - ${new Date(examDate).toLocaleDateString()}`,
-    subjects: (scrapedSyllabus.filter(s => s.department === department).length
-      ? scrapedSyllabus.filter(s => s.department === department)
-      : scrapedSyllabus
-    )
-      .slice(0, 6)
-      .map((s, i) => ({
+    title: `${department} Evidence-Based Study Plan`,
+    subjects: selected.map((s, i) => ({
         name: s.title,
-        chapters: ['Unit 1', 'Unit 2', 'Unit 3', 'Unit 4', 'Revision'],
+        chapters: [
+          ...(s.units || []).map(unit => `Unit ${unit.unit}: ${unit.title}`),
+          'Active recall and previous-question practice',
+          'Final revision'
+        ],
         priority: (i < 2 ? 'high' : i < 4 ? 'medium' : 'low') as 'high' | 'medium' | 'low',
-        estimatedHours: 12 + i * 2,
+        estimatedHours: Math.max(4, Math.min(28, Math.round(((s.credits || 3) * 4 + (s.units?.length || 5) * 1.5) * 2) / 2)),
         completed: false,
       })),
     examDate,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+  };
+  (plan as StudyPlan & { metadata?: unknown }).metadata = {
+    daysAvailable,
+    checkedOn: today().toISOString().slice(0, 10),
+    officialExamReference: officialExam ? {
+      date: officialExam.date,
+      subject: officialExam.subject,
+      source: officialExam.source
+    } : null,
+    note: officialExam
+      ? `An official future exam reference was found for ${officialExam.subject || department} on ${formatDate(officialExam.date)}. Confirm the final timetable before relying on it.`
+      : 'No future official exam date matched this department; the selected date is treated as your planning deadline.'
   };
   return plan;
 }
@@ -327,97 +378,62 @@ export async function apiGenerateStudyPlan(userId: string, department: string, e
 export async function apiGenerateNotes(userId: string, subject: string, topic: string): Promise<GeneratedNotes> {
   await delay(rand(800, 1500));
   
-  const content = `# 📚 ${topic}
-## Subject: ${subject} | Walchand College of Engineering, Sangli (Autonomous)
+  const syllabus = syllabusFor(subject);
+  const units = syllabus?.units || [];
+  const selectedUnits = units.filter(unit => `${unit.title} ${unit.topics}`.toLowerCase().includes(topic.toLowerCase().split(/\s+/)[0])).slice(0, 5);
+  const outline = (selectedUnits.length ? selectedUnits : units).slice(0, 6);
+  const exam = currentExamReference(subject, syllabus?.department);
+  const unitRows = outline.length
+    ? outline.map(unit => `| Unit ${unit.unit} | ${unit.title} | ${unit.topics} |`).join('\n')
+    : '| - | Topic-specific outline unavailable | Verify against the linked syllabus and lecturer notes. |';
+  const content = `# ${topic}
 
----
+## Subject context
+- **Subject:** ${subject}
+- **Course code:** ${syllabus?.courseCode || 'Not matched to the local syllabus'}
+- **Source status:** ${syllabus ? 'Matched to the WCE syllabus dataset' : 'No exact syllabus match; verify against your course material'}
+- **Generated:** ${formatDate(new Date().toISOString().slice(0, 10))}
 
-### 1. Executive Summary & Core Concept
-**${topic}** is a foundational concept in **${subject}**, carrying significant weightage in both Mid-Semester (MSE) and End-Semester (ESE) examinations.
+## Exam-ready summary
+${syllabus?.description || `This note is organized around "${topic}". Verify definitions, formulas, and examples against the official course material.`}
 
-* **Definition:** A formal framework and methodology designed to model, analyze, and optimize systems operating under ${subject} constraints.
-* **Prerequisites:** Fundamentals of discrete mathematics, algorithmic complexity, and foundational principles of ${subject}.
-* **Primary Objective:** To provide guaranteed performance, deterministic behavior, and computational efficiency in real-world engineering applications.
+## Syllabus map
+| Unit | Focus | Topics from the syllabus |
+|---|---|---|
+${unitRows}
 
----
+## Learn this in order
+1. **Prerequisites:** List the definitions and assumptions needed before starting ${topic}.
+2. **Core idea:** Explain the input, process, output, and invariants in your own words.
+3. **Worked example:** Solve one representative problem step by step without looking at the answer.
+4. **Compare and apply:** Record one alternative, one limitation, and one practical application.
+5. **Recall:** Close the notes and reproduce the key diagram, formula, algorithm, or SQL/pseudocode.
 
-### 2. Theoretical Breakdown & Architecture
+## Exam answer framework
+1. Definition and purpose.
+2. Labeled diagram, algorithm, or schema where relevant.
+3. Step-by-step explanation.
+4. One example with assumptions stated.
+5. Complexity, trade-off, or limitation only when supported by the course material.
 
-\`\`\`
-   [ Input / Data Stream ]
-             │
-             ▼
-   ┌─────────────────────────────────────────┐
-   │         Processing & Invariants         │
-   │  - State Verification & Normalization    │
-   │  - Core Algorithmic Logic (${topic})     │
-   └─────────────────────────────────────────┘
-             │
-             ▼
-   [ Optimized Output / State Transition ]
-\`\`\`
+## Self-test questions
+- Define ${topic} and state the assumptions it depends on.
+- Work through a representative example and justify every step.
+- Compare it with the closest alternative using correctness, time, space, and practical constraints.
+- What common mistake causes an incorrect result, and how would you detect it?
 
-#### Key Pillars:
-1. **Structural Invariants:** Conditions that remain strictly invariant before and after execution of operations.
-2. **Computational Complexity:**
-   * **Best Case:** \`O(1)\` or \`O(log N)\` when optimal preconditions are met.
-   * **Average Case:** \`O(N log N)\` under standard randomized inputs.
-   * **Worst Case:** \`O(N^2)\` without balancing or regularization heuristics.
-   * **Auxiliary Space:** \`O(N)\` for representation and execution memory.
+## Revision checklist
+- [ ] I can define the concept without notes.
+- [ ] I can solve one fresh example.
+- [ ] I can draw or reproduce the relevant structure.
+- [ ] I can answer the self-test questions in exam format.
 
-3. **Core Mathematical Formulation:**
-   $$\\mathcal{L}(\\theta) = \\sum_{i=1}^{N} \\ell(f(x_i; \\theta), y_i) + \\lambda \\cdot \\Omega(\\theta)$$
-   Where $\\mathcal{L}(\\theta)$ represents the loss / cost function, and $\\Omega(\\theta)$ enforces regularized stability.
+## Reference date check
+- Checked on **${formatDate(exam.checkedOn)}**.
+- ${exam.official ? `The local dataset has a future reference for **${exam.official.subject || subject}** on **${formatDate(exam.official.date)}**. Confirm the official notice before treating it as final.` : 'No future official exam reference matched this topic. Do not infer an exam date from older notices.'}
 
----
-
-### 3. Implementation Blueprint & Pseudo-Code
-
-\`\`\`python
-def execute_${topic.toLowerCase().replace(/[^a-z0-9]/g, '_')}(data, threshold=0.01):
-    """
-    Executes ${topic} procedure with defensive invariant checks.
-    """
-    if not data:
-        raise ValueError("Input sequence cannot be null")
-        
-    state = initialize_state(data)
-    converged = False
-    iteration = 0
-    
-    while not converged and iteration < 1000:
-        gradient = compute_gradient(state, data)
-        state = update_state(state, gradient)
-        
-        if evaluate_convergence(gradient, threshold):
-            converged = True
-        iteration += 1
-        
-    return summarize_results(state)
-\`\`\`
-
----
-
-### 4. High-Yield WCE Exam Questions & Model Solutions
-
-#### Q1. Explain the fundamental principles and operational trade-offs of ${topic}. (6 Marks)
-* **Model Answer:** State the formal definition, provide the block architecture diagram, contrast trade-offs between memory utilization versus latency, and conclude with two industrial applications.
-
-#### Q2. Compare and contrast ${topic} with traditional alternative techniques in ${subject}. (4 Marks)
-* **Model Answer:** Create a structured comparison table analyzing time complexity, hardware requirements, scalability, and ease of debugging.
-
-#### Q3. What failure modes occur when boundary conditions are violated, and how are they handled? (4 Marks)
-* **Model Answer:** Discuss overflow/underflow, deadlock/starvation conditions, and mitigation via defensive checks, timeout triggers, and graceful degradation.
-
----
-
-### 5. Exam Day Quick-Revision Checklist
-- [x] Memorized formal definitions and state transition equations.
-- [x] Drawn and labeled the architectural diagram without looking at notes.
-- [x] Verified worst-case and average-case space/time complexity bounds.
-- [x] Practiced writing the pseudo-code on paper within 5 minutes.
-
-*(Notes compiled by CampusMind AI Study Companion for WCE Sangli)*`;
+## Source
+${syllabus?.syllabusUrl || 'WCE syllabus source was not matched for this subject.'}`;
 
   const notes: GeneratedNotes = {
     id: `notes_${Date.now()}`,

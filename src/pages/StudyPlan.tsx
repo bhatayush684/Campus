@@ -82,6 +82,7 @@ export default function StudyPlan() {
   const [department, setDepartment] = useState('CSE');
   const [examDate, setExamDate] = useState('');
   const [progress, setProgress] = useState(0);
+  const today = new Date().toISOString().slice(0, 10);
 
   useEffect(() => {
     if (studyPlan) {
@@ -177,6 +178,7 @@ export default function StudyPlan() {
                 <input
                   type="date"
                   value={examDate}
+                  min={today}
                   onChange={e => setExamDate(e.target.value)}
                   className="input w-full"
                 />
@@ -222,6 +224,14 @@ export default function StudyPlan() {
           animate={{ opacity: 1, y: 0 }}
         >
           {/* Stats */}
+          {studyPlan.metadata && (
+            <div className="card p-4 mb-6 border-l-4 border-l-blue-500">
+              <p className="text-sm font-semibold text-slate-900 dark:text-white">Planning checks</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                {studyPlan.metadata.daysAvailable} day(s) available. {studyPlan.metadata.note}
+              </p>
+            </div>
+          )}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
