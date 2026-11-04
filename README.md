@@ -42,7 +42,8 @@ npm run build
 
 The chat service retrieves relevant local content first and asks Gemini to
 synthesize a cited answer. If Gemini is temporarily unavailable, it returns
-the retrieved local excerpts instead.
+the retrieved local excerpts instead. The live scraper supports the official
+`walchandsangli.ac.in`, `walchandsangli.com`, and `walchandsangli.in` domains.
 
 ## Deployment with Docker
 

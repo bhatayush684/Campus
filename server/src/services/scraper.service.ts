@@ -20,7 +20,14 @@ export interface DownloadableDocument {
   category: 'notes' | 'syllabus' | 'question-paper' | 'notice' | 'other';
 }
 
-const allowedHosts = new Set(['walchandsangli.ac.in', 'www.walchandsangli.ac.in', 'walchandsangli.com', 'www.walchandsangli.com']);
+const allowedHosts = new Set([
+  'walchandsangli.ac.in',
+  'www.walchandsangli.ac.in',
+  'walchandsangli.com',
+  'www.walchandsangli.com',
+  'walchandsangli.in',
+  'www.walchandsangli.in'
+]);
 const ignoredExtensions = /\.(?:jpg|jpeg|png|gif|svg|webp|css|js|ico|woff2?)(?:\?|$)/i;
 const documentPattern = /\.(pdf|docx?|xlsx?|pptx?|zip)(?:\?|$)/i;
 const requestHeaders = { 'user-agent': 'CampusMind/1.0 (+https://github.com/bhatayush684/Campus)' };
@@ -109,7 +116,7 @@ export class ScraperService {
   async scrapePage(url: string): Promise<ScrapedData> {
     const parsedUrl = new URL(url);
     if (!allowedHosts.has(parsedUrl.hostname.toLowerCase())) {
-      throw new Error('Only walchandsangli.ac.in and walchandsangli.com are allowed');
+      throw new Error('Only the configured Walchand College domains are allowed');
     }
     const html = await requestHtml(parsedUrl);
     const title = cleanText(html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] || parsedUrl.hostname);
@@ -157,7 +164,7 @@ export class ScraperService {
   }
 
   async scrapeWalchandCollege(): Promise<ScrapedData[]> {
-    const roots = (process.env.WCE_BASE_URLS || 'https://walchandsangli.ac.in,https://walchandsangli.com')
+    const roots = (process.env.WCE_BASE_URLS || 'https://walchandsangli.ac.in,https://walchandsangli.com,https://walchandsangli.in')
       .split(',')
       .map(value => value.trim())
       .filter(Boolean);
