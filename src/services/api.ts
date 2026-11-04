@@ -4,7 +4,8 @@
  * backend handles AI requests and future persistence.
  */
 
-import { User, Conversation, Message, TimetableEntry, Notice, KnowledgeDocument, AnalyticsData, EvalMetric, RAGSettings, ScrapedSyllabus, ScrapedExamSchedule, StudyPlan, GeneratedNotes } from '../types';
+import { User, Conversation, Message, TimetableEntry, Notice, KnowledgeDocument, AnalyticsData, EvalMetric, RAGSettings, ScrapedSyllabus, ScrapedExamSchedule, StudyPlan, GeneratedNotes, NotesGenerationMode, StudyResource } from '../types';
+import { PYQS } from '../data/pyqs';
 import { mockUsers } from '../mock/users';
 import { mockTimetable } from '../mock/timetable';
 import { mockDocuments } from '../mock/documents';
@@ -439,7 +440,12 @@ export async function apiGenerateStudyPlan(userId: string, department: string, e
     } : null,
     note: officialExam
       ? `An official future exam reference was found for ${officialExam.subject || department} on ${formatDate(officialExam.date)}. Confirm the final timetable before relying on it.`
-      : 'No future official exam date matched this department; the selected date is treated as your planning deadline.'
+      : 'No future official exam date matched this department; the selected date is treated as your planning deadline.',
+    pyqs: PYQS.filter(pyq => selected.some(subject => subjectMatches(subject.title, pyq.subject))).slice(0, 12),
+    resources: selected.slice(0, 8).flatMap(subject => [
+      { title: `${subject.title} syllabus`, type: 'syllabus' as const, url: subject.syllabusUrl, description: 'Verify units, credits, and official examination scope.' },
+      { title: `${subject.title} complete notes`, type: 'notes' as const, url: subject.downloadUrl, description: 'Open the course-level revision notes.' },
+    ]).filter(resource => Boolean(resource.url)) as StudyResource[]
   };
   return plan;
 }
@@ -448,13 +454,25 @@ export async function apiGenerateStudyPlan(userId: string, department: string, e
  * Generate notes based on syllabus.
  * Real API: POST /api/notes/generate { userId, subject, topic }
  */
-export async function apiGenerateNotes(userId: string, subject: string, topic: string): Promise<GeneratedNotes> {
+export async function apiGenerateNotes(
+  userId: string,
+  subject: string,
+  topic: string,
+  options?: { mode?: NotesGenerationMode; department?: string; year?: string; courseCode?: string; unit?: number }
+): Promise<GeneratedNotes> {
   await delay(rand(800, 1500));
   
   const syllabus = syllabusFor(subject);
   const units = syllabus?.units || [];
-  const selectedUnits = relevantUnits(units, topic);
+  const generationOptions = options || {};
+  const mode = generationOptions.mode || 'topic';
+  const selectedUnits = mode === 'module' && generationOptions.unit
+    ? units.filter(unit => unit.unit === generationOptions.unit)
+    : mode === 'topic' ? relevantUnits(units, topic) : units;
   const outline = (selectedUnits.length ? selectedUnits : units).slice(0, 6);
+  const pyqs = PYQS.filter(pyq => subjectMatches(pyq.subject, subject)
+    && (!outline.length || !pyq.unit || outline.some(unit => `Unit ${unit.unit}` === pyq.unit)));
+  const generationLabel = mode === 'course' ? 'Complete course revision pack' : mode === 'module' ? `Module ${generationOptions.unit || ''} revision pack` : 'Focused topic revision pack';
   const blueprint = topicBlueprint(subject, topic);
   const exam = currentExamReference(subject, syllabus?.department);
   const unitRows = outline.length
@@ -466,7 +484,9 @@ export async function apiGenerateNotes(userId: string, subject: string, topic: s
   const vocabularyRows = vocabulary.length
     ? vocabulary.map((item, index) => `| ${index + 1} | ${markdownCell(item)} | Define it, state its role, and connect it to ${topic}. |`).join('\n')
     : `| 1 | ${markdownCell(topic)} | Verify the definition from the official syllabus or lecturer notes. |`;
-  const content = `# ${topic}
+  const content = `# ${subject} — ${generationLabel}
+
+> **Scope:** ${mode === 'course' ? 'All syllabus modules' : mode === 'module' ? `Module ${options?.unit || ''}` : `Topic: ${topic}`}
 
 ## Subject context
 - **Subject:** ${subject}
@@ -505,6 +525,9 @@ ${vocabularyRows}
 | Unit | Focus | Topics from the syllabus |
 |---|---|---|
 ${unitRows}
+
+## 2A. Previous-year question focus
+${pyqs.length ? pyqs.map((pyq, index) => `${index + 1}. **${pyq.year} · ${pyq.marks} marks · ${pyq.unit || 'Mixed'}** — ${pyq.question}`).join('\n') : 'No verified PYQs are available for this exact course/module in the local dataset. Use the practice ladder below and verify against official papers.'}
 
 ## 3. Learn it step by step
 1. **Prerequisites:** Write the definitions and assumptions required before starting ${topic}.
@@ -596,7 +619,8 @@ ${blueprint.compare}
 - ${exam.official ? `The local dataset has a future reference for **${exam.official.subject || subject}** on **${formatDate(exam.official.date)}**. Confirm the official notice before treating it as final.` : 'No future official exam reference matched this topic. Do not infer an exam date from older notices.'}
 
 ## Sources and verification
-${syllabus?.syllabusUrl || 'WCE syllabus source was not matched for this subject.'}`;
+- Syllabus: ${syllabus?.syllabusUrl || 'WCE syllabus source was not matched for this subject.'}
+- PYQ status: ${pyqs.length ? 'Curated local question references; verify the original paper before treating wording as official.' : 'No matching local PYQ reference.'}`;
 
   const notes: GeneratedNotes = {
     id: `notes_${Date.now()}`,
@@ -623,9 +647,9 @@ export async function apiGetTimetable(filters?: {
 }): Promise<TimetableEntry[]> {
   await delay(rand(400, 700));
   let data = [...mockTimetable];
-  if (filters?.department) data = data.filter(t => t.department === filters.department);
-  if (filters?.year) data = data.filter(t => t.year === filters.year);
-  if (filters?.division) data = data.filter(t => t.division === filters.division);
+  if (filters?.department && filters.department !== 'All') data = data.filter(t => t.department === filters.department);
+  if (filters?.year && filters.year !== 'All') data = data.filter(t => t.year === filters.year);
+  if (filters?.division && filters.division !== 'All') data = data.filter(t => t.division === filters.division);
   if (filters?.faculty) data = data.filter(t => t.faculty.toLowerCase().includes(filters.faculty!.toLowerCase()));
   return data;
 }

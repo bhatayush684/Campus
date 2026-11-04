@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Download, Printer, Calendar } from 'lucide-react';
 import { apiGetTimetable } from '../services/api';
 import { TimetableEntry, Department, Year, Division } from '../types';
-import { useAuthStore } from '../store/authStore';
 import { cn, generateICS } from '../lib/utils';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as const;
@@ -22,15 +21,14 @@ const TYPE_BADGE: Record<string, string> = {
 };
 
 export default function Timetable() {
-  const { user } = useAuthStore();
   const [entries, setEntries] = useState<TimetableEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<'week' | 'day'>('week');
   const [selectedDay, setSelectedDay] = useState<typeof DAYS[number]>('Monday');
   const [filters, setFilters] = useState({
-    department: user?.department ?? 'CSE',
-    year: user?.year ?? 'TY',
-    division: user?.division ?? 'A',
+    department: 'All',
+    year: 'All',
+    division: 'All',
     faculty: '',
   });
 
@@ -107,7 +105,7 @@ export default function Timetable() {
               onChange={e => setFilters(f => ({ ...f, department: e.target.value as Department }))}
               className="input text-sm py-2"
             >
-              {(['CSE', 'IT', 'ENTC', 'Civil', 'Mechanical', 'Electrical', 'AI/ML'] as Department[]).map(d => <option key={d}>{d}</option>)}
+              {(['All', 'CSE', 'IT', 'ENTC', 'Civil', 'Mechanical', 'Electrical', 'AI/ML', 'Robotics', 'General'] as (Department | 'All')[]).map(d => <option key={d}>{d}</option>)}
             </select>
           </div>
           <div className="flex-1 min-w-24">
@@ -117,7 +115,7 @@ export default function Timetable() {
               onChange={e => setFilters(f => ({ ...f, year: e.target.value as Year }))}
               className="input text-sm py-2"
             >
-              {(['FY', 'SY', 'TY', 'BE'] as Year[]).map(y => <option key={y}>{y}</option>)}
+              {(['All', 'FY', 'SY', 'TY', 'BE'] as (Year | 'All')[]).map(y => <option key={y}>{y}</option>)}
             </select>
           </div>
           <div className="flex-1 min-w-24">
@@ -127,7 +125,7 @@ export default function Timetable() {
               onChange={e => setFilters(f => ({ ...f, division: e.target.value as Division }))}
               className="input text-sm py-2"
             >
-              {(['A', 'B', 'C'] as Division[]).map(d => <option key={d}>{d}</option>)}
+              {(['All', 'A', 'B', 'C'] as (Division | 'All')[]).map(d => <option key={d}>{d}</option>)}
             </select>
           </div>
           <div className="flex-1 min-w-40">

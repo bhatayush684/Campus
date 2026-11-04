@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, BookOpen, Clock, CheckCircle, Circle, Sparkles, Target, TrendingUp, Gauge, RotateCcw, ListChecks } from 'lucide-react';
+import { Calendar, BookOpen, Clock, CheckCircle, Circle, Sparkles, Target, TrendingUp, Gauge, RotateCcw, ListChecks, ExternalLink, BrainCircuit } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { apiGenerateStudyPlan } from '../services/api';
 import { useAuthStore } from '../store/authStore';
@@ -282,6 +282,35 @@ export default function StudyPlan() {
               </p>
             </div>
           )}
+          <div className="grid lg:grid-cols-2 gap-6 mb-6">
+            <div className="card p-5">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2"><BrainCircuit className="w-4 h-4 text-purple-500" /> PYQ priority set</h3>
+                <span className="badge text-[10px] bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300">{studyPlan.metadata?.pyqs?.length || 0} questions</span>
+              </div>
+              <div className="space-y-2">
+                {(studyPlan.metadata?.pyqs || []).slice(0, 4).map(pyq => (
+                  <div key={pyq.id} className="rounded-lg bg-slate-50 dark:bg-slate-800/60 p-3">
+                    <div className="flex justify-between gap-2 text-[10px] text-slate-400"><span>{pyq.year} · {pyq.unit || 'Mixed'} · {pyq.type}</span><b>{pyq.marks} marks</b></div>
+                    <p className="text-xs text-slate-700 dark:text-slate-300 mt-1">{pyq.question}</p>
+                  </div>
+                ))}
+                {!studyPlan.metadata?.pyqs?.length && <p className="text-xs text-slate-400">No matching local PYQs yet. Use the syllabus-aligned practice questions in each subject.</p>}
+              </div>
+            </div>
+            <div className="card p-5">
+              <h3 className="font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2"><BookOpen className="w-4 h-4 text-emerald-500" /> Recommended resources</h3>
+              <div className="space-y-2">
+                {(studyPlan.metadata?.resources || []).slice(0, 6).map((resource, index) => (
+                  <a key={`${resource.title}-${index}`} href={resource.url || '#'} target="_blank" rel="noreferrer" className="flex items-start gap-3 rounded-lg p-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    <ExternalLink className="w-3.5 h-3.5 text-primary-500 mt-0.5" />
+                    <span><span className="block text-xs font-medium text-slate-800 dark:text-slate-200">{resource.title}</span><span className="block text-[10px] text-slate-400">{resource.description}</span></span>
+                  </a>
+                ))}
+                {!studyPlan.metadata?.resources?.length && <p className="text-xs text-slate-400">Generate a fresh plan to attach syllabus and course resources.</p>}
+              </div>
+            </div>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}

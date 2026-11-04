@@ -7,9 +7,9 @@ import {
   Sparkles, FileText, Copy, Download, Check, Loader2,
   BookOpen, Bookmark, BookmarkCheck, History
 } from 'lucide-react';
-import { apiGenerateNotes } from '../services/api';
+import { apiGenerateNotes, apiGetSyllabus } from '../services/api';
 import { useAuthStore } from '../store/authStore';
-import { GeneratedNotes } from '../types';
+import { GeneratedNotes, NotesGenerationMode, ScrapedSyllabus } from '../types';
 import { toast } from 'sonner';
 
 const POPULAR_SUBJECTS = [
@@ -69,6 +69,11 @@ export default function NotesGenerator() {
   const [searchParams] = useSearchParams();
   const [subject, setSubject] = useState(searchParams.get('subject') || 'Machine Learning');
   const [topic, setTopic] = useState('Supervised vs Unsupervised & Regularization (L1/L2)');
+  const [mode, setMode] = useState<NotesGenerationMode>('topic');
+  const [branch, setBranch] = useState('CSE');
+  const [year, setYear] = useState('TY');
+  const [courses, setCourses] = useState<ScrapedSyllabus[]>([]);
+  const [selectedUnit, setSelectedUnit] = useState(1);
   const [generating, setGenerating] = useState(false);
   const [notes, setNotes] = useState<GeneratedNotes | null>(null);
   const [copied, setCopied] = useState(false);
@@ -94,15 +99,32 @@ export default function NotesGenerator() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    apiGetSyllabus({ department: branch }).then(data => {
+      setCourses(data);
+      const match = data.find(course => course.title === subject) || data[0];
+      if (match) setSubject(match.title);
+    }).catch(() => toast.error('Could not load branch syllabus'));
+  }, [branch]);
+
+  const yearCourses = courses.filter(course => !course.year || course.year === year);
+  const selectedCourse = yearCourses.find(course => course.title === subject) || courses.find(course => course.title === subject);
+
   const handleGenerate = async () => {
-    if (!subject.trim() || !topic.trim()) {
-      toast.error('Please specify both subject and topic');
+    if (!subject.trim() || (mode === 'topic' && !topic.trim())) {
+      toast.error('Please specify the subject and topic');
       return;
     }
 
     setGenerating(true);
     try {
-      const result = await apiGenerateNotes(user?.id || 'demo_user', subject, topic);
+      const result = await apiGenerateNotes(user?.id || 'demo_user', subject, mode === 'course' ? 'Complete course' : mode === 'module' ? `Module ${selectedUnit}` : topic, {
+        mode,
+        department: branch,
+        year,
+        courseCode: selectedCourse?.courseCode,
+        unit: selectedUnit,
+      });
       setNotes(result);
       toast.success('Study notes generated with exam blueprints!');
     } catch (error) {
@@ -275,24 +297,59 @@ export default function NotesGenerator() {
                 Customize Study Target
               </h2>
 
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Generation scope</label>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    ['course', 'Complete course'],
+                    ['module', 'One module'],
+                    ['topic', 'Focused topic'],
+                  ] as [NotesGenerationMode, string][]).map(([value, label]) => (
+                    <button key={value} type="button" onClick={() => setMode(value)} className={`rounded-lg border px-2 py-2 text-[11px] font-semibold ${mode === value ? 'border-purple-500 bg-purple-600/30 text-purple-200' : 'border-white/10 bg-slate-950/60 text-slate-400'}`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <label className="text-xs text-slate-400">Branch
+                  <select value={branch} onChange={e => setBranch(e.target.value)} className="mt-1 w-full input text-sm">
+                    {['CSE', 'IT', 'ENTC', 'Civil', 'Mechanical', 'Electrical', 'AI/ML', 'Robotics', 'General'].map(value => <option key={value}>{value}</option>)}
+                  </select>
+                </label>
+                <label className="text-xs text-slate-400">Year
+                  <select value={year} onChange={e => setYear(e.target.value)} className="mt-1 w-full input text-sm">
+                    {['FY', 'SY', 'TY', 'BE'].map(value => <option key={value}>{value}</option>)}
+                  </select>
+                </label>
+              </div>
+
               {/* Subject selector */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
                   Academic Subject
                 </label>
-                <input
-                  list="subjects-list"
+                <select
                   value={subject}
                   onChange={e => setSubject(e.target.value)}
-                  placeholder="Select or enter subject name..."
                   className="w-full px-3.5 py-2.5 bg-slate-950/80 border border-white/10 rounded-xl text-white text-sm outline-none focus:border-purple-500"
-                />
-                <datalist id="subjects-list">
-                  {POPULAR_SUBJECTS.map(s => <option key={s} value={s} />)}
-                </datalist>
+                >
+                  {(yearCourses.length ? yearCourses : courses.length ? courses : POPULAR_SUBJECTS.map(title => ({ title } as ScrapedSyllabus))).map(course => <option key={course.title}>{course.title}</option>)}
+                </select>
               </div>
 
+              {mode === 'module' && (
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Module</label>
+                  <select value={selectedUnit} onChange={e => setSelectedUnit(Number(e.target.value))} className="w-full input">
+                    {(selectedCourse?.units || []).map(unit => <option key={unit.unit} value={unit.unit}>Unit {unit.unit}: {unit.title}</option>)}
+                  </select>
+                </div>
+                )}
+
               {/* Topic selector */}
+              {mode === 'topic' && (
               <div>
                 <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
                   Specific Syllabus Topic
@@ -304,9 +361,10 @@ export default function NotesGenerator() {
                   className="w-full px-3.5 py-2.5 bg-slate-950/80 border border-white/10 rounded-xl text-white text-sm outline-none focus:border-purple-500"
                 />
               </div>
+              )}
 
               {/* Quick Topic Chips */}
-              <div>
+              {mode === 'topic' && <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
                   High-Yield WCE Exam Topics for this Subject:
                 </label>
@@ -326,7 +384,7 @@ export default function NotesGenerator() {
                     </button>
                   ))}
                 </div>
-              </div>
+              </div>}
 
               {/* Generate Action Button */}
               <button

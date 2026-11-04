@@ -296,8 +296,29 @@ export interface StudyPlan {
       source?: string;
     } | null;
     note: string;
+    pyqs?: PYQ[];
+    resources?: StudyResource[];
   };
 }
+
+export interface PYQ {
+  id: string;
+  subject: string;
+  year: string;
+  marks: number;
+  question: string;
+  unit?: string;
+  type: 'theory' | 'numerical' | 'programming' | 'diagram';
+}
+
+export interface StudyResource {
+  title: string;
+  type: 'syllabus' | 'notes' | 'pyq' | 'textbook' | 'official';
+  url?: string;
+  description: string;
+}
+
+export type NotesGenerationMode = 'course' | 'module' | 'topic';
 
 export interface GeneratedNotes {
   id: string;
