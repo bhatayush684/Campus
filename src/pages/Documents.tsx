@@ -26,6 +26,9 @@ export default function Documents() {
   const [uploadCategory, setUploadCategory] = useState('Syllabus');
   const [, setProcessingIds] = useState<Set<string>>(new Set());
   const [preview, setPreview] = useState<KnowledgeDocument | null>(null);
+  const [reviewedIds, setReviewedIds] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem('campusmind_reviewed_documents') || '[]'); } catch { return []; }
+  });
 
   const canUpload = user?.role === 'faculty' || user?.role === 'admin';
 
@@ -78,9 +81,18 @@ export default function Documents() {
   }, [uploadCategory, user]);
 
   const handleDelete = async (id: string) => {
-    await apiDeleteDocument(id);
-    setDocs(prev => prev.filter(d => d.id !== id));
-    toast.success('Document deleted');
+    try {
+      await apiDeleteDocument(id);
+      setDocs(prev => prev.filter(d => d.id !== id));
+      setReviewedIds(prev => {
+        const next = prev.filter(reviewedId => reviewedId !== id);
+        localStorage.setItem('campusmind_reviewed_documents', JSON.stringify(next));
+        return next;
+      });
+      toast.success('Document deleted');
+    } catch {
+      toast.error('Could not delete the document');
+    }
   };
 
   const filtered = docs.filter(d =>
@@ -269,18 +281,23 @@ export default function Documents() {
               {preview.category} · {preview.status} · {formatFileSize(preview.size)} · uploaded by {preview.uploadedBy}
             </p>
             <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              This is a knowledge-base document used by CampusMind. In a live deployment the original PDF would open here.
+              This is a knowledge-base document used by CampusMind. Review the metadata before relying on its contents.
             </p>
             <div className="mt-5 flex justify-end gap-2">
               <button className="btn-secondary" onClick={() => setPreview(null)}>Close</button>
               <button
                 className="btn-primary"
                 onClick={() => {
-                  toast.success('Document marked as reviewed');
+                  const next = reviewedIds.includes(preview.id)
+                    ? reviewedIds.filter(id => id !== preview.id)
+                    : [...reviewedIds, preview.id];
+                  setReviewedIds(next);
+                  localStorage.setItem('campusmind_reviewed_documents', JSON.stringify(next));
+                  toast.success(next.includes(preview.id) ? 'Document marked as reviewed' : 'Review mark removed');
                   setPreview(null);
                 }}
               >
-                Mark reviewed
+                {reviewedIds.includes(preview.id) ? 'Remove reviewed mark' : 'Mark reviewed'}
               </button>
             </div>
           </div>

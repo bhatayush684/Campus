@@ -19,6 +19,9 @@ export default function Admin() {
   const [savingRAG, setSavingRAG] = useState(false);
   const [answerFor, setAnswerFor] = useState<{ id: string; query: string } | null>(null);
   const [answerText, setAnswerText] = useState('');
+  const [knowledgeAnswers, setKnowledgeAnswers] = useState<Record<string, string>>(() => {
+    try { return JSON.parse(localStorage.getItem('campusmind_knowledge_answers') || '{}'); } catch { return {}; }
+  });
 
   useEffect(() => {
     Promise.all([apiGetUsers(), apiGetAnalytics(), apiGetRAGSettings()]).then(([u, a, r]) => {
@@ -341,6 +344,9 @@ export default function Admin() {
                     ...prev,
                     unansweredQueries: prev.unansweredQueries.filter((q) => q.id !== answerFor.id),
                   } : prev);
+                  const nextAnswers = { ...knowledgeAnswers, [answerFor.id]: answerText.trim() };
+                  setKnowledgeAnswers(nextAnswers);
+                  localStorage.setItem('campusmind_knowledge_answers', JSON.stringify(nextAnswers));
                   toast.success('Answer added to the knowledge base');
                   setAnswerFor(null);
                 }}

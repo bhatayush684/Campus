@@ -4,6 +4,7 @@ import { RefreshCw, Loader2 } from 'lucide-react';
 import { apiGetAnalytics, apiGetEvalMetrics } from '../services/api';
 import { AnalyticsData, EvalMetric } from '../types';
 import { cn } from '../lib/utils';
+import { toast } from 'sonner';
 import {
   LineChart, Line, BarChart, Bar, RadarChart, Radar, PolarGrid, PolarAngleAxis,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
@@ -35,12 +36,21 @@ export default function Evaluation() {
   const [metrics, setMetrics] = useState<EvalMetric[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const loadEvaluation = () => {
+    setLoading(true);
+    return Promise.all([apiGetAnalytics(), apiGetEvalMetrics()])
+      .then(([a, m]) => {
+        setAnalytics(a);
+        setMetrics(m);
+      })
+      .catch(() => {
+        toast.error('Could not refresh evaluation data');
+      })
+      .finally(() => setLoading(false));
+  };
+
   useEffect(() => {
-    Promise.all([apiGetAnalytics(), apiGetEvalMetrics()]).then(([a, m]) => {
-      setAnalytics(a);
-      setMetrics(m);
-      setLoading(false);
-    });
+    void loadEvaluation();
   }, []);
 
   const avgMetrics = metrics.length > 0 ? {
@@ -72,14 +82,7 @@ export default function Evaluation() {
         </div>
         <button
           className="btn-secondary text-sm"
-          onClick={() => {
-            setLoading(true);
-            Promise.all([apiGetAnalytics(), apiGetEvalMetrics()]).then(([a, m]) => {
-              setAnalytics(a);
-              setMetrics(m);
-              setLoading(false);
-            });
-          }}
+          onClick={() => void loadEvaluation()}
         >
           <RefreshCw className="w-4 h-4" /> Refresh
         </button>

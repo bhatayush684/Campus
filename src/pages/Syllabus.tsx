@@ -77,7 +77,7 @@ export default function Syllabus() {
   };
 
   const handleGenerateNotes = (course: ScrapedSyllabus) => {
-    navigate(`/app/notes-generator?subject=${encodeURIComponent(course.title)}&code=${encodeURIComponent(course.courseCode || '')}`);
+    navigate(`/app/notes-generator?subject=${encodeURIComponent(course.title)}`);
   };
 
   return (

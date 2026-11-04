@@ -48,10 +48,20 @@ export default function Timetable() {
   const dayEntries = entries.filter(e => e.day === selectedDay).sort((a, b) => a.period - b.period);
 
   const handleExport = () => {
+    const monday = new Date();
+    const day = monday.getDay();
+    const daysFromMonday = day === 0 ? -6 : 1 - day;
+    monday.setDate(monday.getDate() + daysFromMonday);
+    const dayOffsets = Object.fromEntries(DAYS.map((name, index) => [name, index])) as Record<typeof DAYS[number], number>;
+    const formatLocalDate = (offset: number) => {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + offset);
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    };
     const icsEvents = entries.map(e => ({
       title: `${e.subject} (${e.type})`,
-      start: `2024-11-04T${e.startTime}:00`,
-      end: `2024-11-04T${e.endTime === '17:00' ? '17:00' : e.endTime}:00`,
+      start: `${formatLocalDate(dayOffsets[e.day])}T${e.startTime}:00`,
+      end: `${formatLocalDate(dayOffsets[e.day])}T${e.endTime}:00`,
       location: e.room,
       description: `Faculty: ${e.faculty}`,
     }));
@@ -62,6 +72,7 @@ export default function Timetable() {
     a.href = url;
     a.download = `timetable_${filters.department}_${filters.year}${filters.division}.ics`;
     a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (

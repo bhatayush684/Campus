@@ -21,7 +21,8 @@ app.use(cors({
       .split(',')
       .map(value => value.trim())
       .filter(Boolean);
-    if (!origin || configuredOrigins.length === 0 || configuredOrigins.includes(origin)) {
+    const localOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173'];
+    if (!origin || configuredOrigins.length === 0 || configuredOrigins.includes(origin) || localOrigins.includes(origin)) {
       return callback(null, true);
     }
     return callback(new Error('Origin is not allowed by CORS'));
